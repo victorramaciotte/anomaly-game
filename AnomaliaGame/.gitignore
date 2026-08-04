@@ -1,0 +1,18 @@
+# Compilado
+bin/
+build/
+*.class
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Logs e temporários
+*.log
+*.tmp
