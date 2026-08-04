@@ -7,7 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import collision.CollisionSystem;
+import entity.Anomaly;
 import entity.Block;
+import entity.Direction;
 import entity.Player;
 
 public class Game implements Runnable {
@@ -18,6 +20,7 @@ public class Game implements Runnable {
 	private Thread gameThread;
 	private Player player;
 	private List<Block> blocks;
+	private Anomaly anomaly;
 	
 	public Game() {
 		initClasses();
@@ -54,6 +57,8 @@ public class Game implements Runnable {
 			rightwall.setVisible(false);
 			blocks.add(rightwall);
 		}
+		
+		anomaly = new Anomaly(0, 0, Direction.LEFT_TO_RIGHT);
 	}
 
 	private void startGameLoop () {
@@ -67,6 +72,8 @@ public class Game implements Runnable {
 
 	    player.updateY();
 	    collision.resolveY(player, blocks);
+	    
+	    anomaly.update();
 	}
 	
 	public void render(Graphics g) {
@@ -125,5 +132,9 @@ public class Game implements Runnable {
 	
 	public List<Block> getBlocks() {
 		return blocks;
+	}
+	
+	public Anomaly getAnomaly() {
+		return anomaly;
 	}
 }

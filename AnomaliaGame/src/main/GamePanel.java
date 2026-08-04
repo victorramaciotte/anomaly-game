@@ -2,6 +2,7 @@ package main;
 
 import javax.swing.JPanel;
 
+import entity.Anomaly;
 import entity.Block;
 import input.KeyboardInputs;
 import input.MouseInputs;
@@ -50,6 +51,8 @@ public class GamePanel extends JPanel {
 		for (Block block : game.getBlocks()) {
 	        block.render(g);
 	    }
+		
+		game.getAnomaly().render(g);
 	}
 
 	private void updateRectangle() {
