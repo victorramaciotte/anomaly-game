@@ -4,6 +4,7 @@ import java.util.List;
 
 import entity.Anomaly;
 import entity.Block;
+import entity.BlockState;
 import entity.Entity;
 import entity.Player;
 import main.GameConfig;
@@ -24,6 +25,10 @@ public class CollisionSystem {
 				p.setY(block.getY() - p.getHeight());
 				p.resetJumps();
 				landedThisTick = true;
+				
+				if (block.getState() == BlockState.CORRUPTED || block.getState() == BlockState.CRACKED) {
+					p.takeDamage(GameConfig.ANOMALY_DAMAGE_PER_SECOND);
+				}
 
 	            if (!p.isOnGround()) {
 	                block.stepOn();

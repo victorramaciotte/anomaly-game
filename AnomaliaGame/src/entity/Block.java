@@ -56,4 +56,8 @@ public class Block extends Entity {
 			destroy();
 		}
 	}
+	
+	public BlockState getState() {
+		return state;
+	}
 }
