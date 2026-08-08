@@ -1,5 +1,6 @@
 package entity;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 import main.GameConfig;
@@ -8,9 +9,14 @@ public class Player extends Entity {
 	
 	private boolean left, right, onGround, jumpRequested;
 	private int jumpsUsed = 0;
+	private double hp = GameConfig.MAX_HP;
+	private int lives = GameConfig.STARTING_LIVES;
+	private double startingX, startingY;
 	
 	public Player(double x, double y) {
 		super(x, y, GameConfig.PLAYER_WIDTH, GameConfig.PLAYER_HEIGHT);
+		this.startingX = x;
+		this.startingY = y;
 	}
 	
 	public void setLeft(boolean value) { this.left = value; }
@@ -43,6 +49,7 @@ public class Player extends Entity {
     }
 
 	public void render(Graphics g) {
+		g.setColor(Color.BLUE);
 		g.fillRect((int) x, (int) y, (int) width, (int) height);
 	}
 	
@@ -79,4 +86,29 @@ public class Player extends Entity {
     	this.x = newX;
     	velocityX = 0;
     }
+    
+    public void respawn() {
+    	setX(startingX);
+    	setY(startingY);
+    }
+    
+    public void takeLife() {
+    	lives--;
+    	hp = GameConfig.MAX_HP;
+    	respawn();
+    }
+    
+    public boolean takeDamage(double damage) {
+    	boolean fatalDamage = false;
+    	
+    	hp = Math.max(0, (hp - damage));
+    	
+    	if(hp <= 0) { fatalDamage = true; }
+    	System.out.println(hp);
+    	
+    	return fatalDamage;
+    }
+    
+    public boolean isOnGround() { return onGround; }
+    public void setOnGround(boolean value) { this.onGround = value; }
 }

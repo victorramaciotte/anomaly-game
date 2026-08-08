@@ -7,6 +7,7 @@ import entity.Block;
 import input.KeyboardInputs;
 import input.MouseInputs;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 
 @SuppressWarnings("serial")
@@ -21,6 +22,7 @@ public class GamePanel extends JPanel {
 		mouseInputs = new MouseInputs(this);
 		this.game = game;
 		
+		setPreferredSize(new Dimension(GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT));
 		addKeyListener(new KeyboardInputs(game.getPlayer()));
 		addMouseListener(mouseInputs);
 		addMouseMotionListener(mouseInputs);

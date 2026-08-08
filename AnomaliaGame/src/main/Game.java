@@ -9,6 +9,8 @@ import java.util.List;
 import collision.CollisionSystem;
 import entity.Anomaly;
 import entity.Block;
+import entity.BlockState;
+import entity.BlockType;
 import entity.Direction;
 import entity.Player;
 
@@ -40,20 +42,20 @@ public class Game implements Runnable {
 		blocks = new ArrayList<>();
 		
 		for(int x = 0; x < GameConfig.SCREEN_WIDTH; x += GameConfig.TILE_SIZE) {
-			blocks.add(new Block(x, 480));
+			blocks.add(new Block(x, 492, BlockState.NORMAL, BlockType.NORMAL));
 			
 		}
 		
-		blocks.add(new Block(400, 450));
-		blocks.add(new Block(50, 450));
+		blocks.add(new Block(400, 444, BlockState.NORMAL, BlockType.BREAKABLE));
+		blocks.add(new Block(50, 444, BlockState.NORMAL, BlockType.BREAKABLE));
 		
 		for(int y = 0; y < GameConfig.SCREEN_WIDTH; y += GameConfig.TILE_SIZE) {
 			
-			Block leftwall = new Block(-48, y);
+			Block leftwall = new Block(-48, y, BlockState.NORMAL, BlockType.NORMAL);
 			leftwall.setVisible(false);
 			blocks.add(leftwall);
 			
-			Block rightwall = new Block(960, y);
+			Block rightwall = new Block(960, y, BlockState.NORMAL, BlockType.NORMAL);
 			rightwall.setVisible(false);
 			blocks.add(rightwall);
 		}
@@ -74,6 +76,8 @@ public class Game implements Runnable {
 	    collision.resolveY(player, blocks);
 	    
 	    anomaly.update();
+	    collision.checkAnomalyDamage(player, anomaly);
+	    collision.affectBlocks(blocks, anomaly);
 	}
 	
 	public void render(Graphics g) {
