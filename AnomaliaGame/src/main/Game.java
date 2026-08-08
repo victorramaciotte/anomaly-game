@@ -48,6 +48,8 @@ public class Game implements Runnable {
 		
 		blocks.add(new Block(400, 444, BlockState.NORMAL, BlockType.BREAKABLE));
 		blocks.add(new Block(50, 444, BlockState.NORMAL, BlockType.BREAKABLE));
+		blocks.add(new Block(450, 300, BlockState.NORMAL, BlockType.NORMAL));
+		blocks.add(new Block(550, 200, BlockState.NORMAL, BlockType.NORMAL));
 		
 		for(int y = 0; y < GameConfig.SCREEN_WIDTH; y += GameConfig.TILE_SIZE) {
 			

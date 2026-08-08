@@ -17,6 +17,7 @@ public class CollisionSystem {
 	
 	public void resolveY(Player p, List<Block> blocks) {
 		boolean landedThisTick = false;
+		boolean wasOnGround = p.isOnGround();
 		
 		for (Block block : blocks) {
 			if (!intersects(p, block) || !block.isSolid()) continue;
@@ -30,14 +31,19 @@ public class CollisionSystem {
 					p.takeDamage(GameConfig.ANOMALY_DAMAGE_PER_SECOND);
 				}
 
-	            if (!p.isOnGround()) {
+	            if (!wasOnGround) {
 	                block.stepOn();
+	                p.checkFallDamage();
 	            }
 			} 
 			else if (p.getVelocityY() < 0) {
 				p.setY(block.getY() + block.getHeight());
 				
 			}
+	    }
+		
+		if (wasOnGround && !landedThisTick) {
+	        p.startFalling(); // estava no chão, esse tick não colidiu mais: começou a cair
 	    }
 		
 		p.setOnGround(landedThisTick);

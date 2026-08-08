@@ -12,7 +12,7 @@ public final class GameConfig {
     public static final double PLAYER_WIDTH = 34;
     public static final double PLAYER_HEIGHT = 48;
     public static final double MOVE_SPEED = 2.0;
-    public static final double ANOMALY_BASE_SPEED = 1.0;// px por tick
+    public static final double ANOMALY_BASE_SPEED = 0.1;// px por tick
     public static final double JUMP_FORCE = -6.0;   // px por tick
     public static final double GRAVITY = 0.15;         // px por tick²
     public static final int MAX_JUMPS = 2;

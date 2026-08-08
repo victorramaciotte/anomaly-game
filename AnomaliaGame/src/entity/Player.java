@@ -11,7 +11,7 @@ public class Player extends Entity {
 	private int jumpsUsed = 0;
 	private double hp = GameConfig.MAX_HP;
 	private int lives = GameConfig.STARTING_LIVES;
-	private double startingX, startingY;
+	private double startingX, startingY, fallStartY;
 	
 	public Player(double x, double y) {
 		super(x, y, GameConfig.PLAYER_WIDTH, GameConfig.PLAYER_HEIGHT);
@@ -111,4 +111,15 @@ public class Player extends Entity {
     
     public boolean isOnGround() { return onGround; }
     public void setOnGround(boolean value) { this.onGround = value; }
+    
+    public void startFalling() {
+        fallStartY = y;
+    }
+
+    public void checkFallDamage() {
+        double fallDistance = y - fallStartY;
+        if (fallDistance >= GameConfig.FALL_DAMAGE_MIN_HEIGHT) {
+            takeDamage(GameConfig.FALL_DAMAGE_AMOUNT);
+        }
+    }
 }
