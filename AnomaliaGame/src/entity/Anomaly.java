@@ -10,6 +10,7 @@ public class Anomaly extends Entity {
 	private Direction d;
 	private double startX = 0, startY = 0;
 	private int affectedWidth = 0, affectedHeight = 0;
+	private boolean frozen = false;
 	
 	public Anomaly(double x, double y, Direction d) {
 		super(x, y, GameConfig.TILE_SIZE, GameConfig.SCREEN_HEIGHT);
@@ -21,6 +22,7 @@ public class Anomaly extends Entity {
 	
 	
 	public void update() {
+		if (frozen) return; 
 	    if(d.dx != 0) {
 	    	if(d.dx > 0 && x > GameConfig.SCREEN_WIDTH) { return; }
 	    	else if(d.dx < 0 && x < 0) { return; }
@@ -35,15 +37,19 @@ public class Anomaly extends Entity {
 	    y += velocityY;
 	}
 	
+	public void freeze() {
+		frozen = true;
+	}
+	
 	public void render(Graphics g) {
-		g.setColor(Color.RED);
-		g.fillRect((int) x, (int) y, (int) width, (int) height);
+	/**	g.setColor(Color.RED);
+		g.fillRect((int) x, (int) y, (int) width, (int) height); **/
 		
-	/*	Rectangle2D.Double anomalyArea = new Rectangle2D.Double();
+		Rectangle2D.Double anomalyArea = new Rectangle2D.Double();
 		anomalyArea = getAffectedArea();
-		g.setColor(Color.gray);
+		g.setColor(Color.getHSBColor(80f / 360f, 0.35f, 0.18f));
 		g.fillRect((int) anomalyArea.getX(), (int) anomalyArea.getY(), (int) anomalyArea.getWidth(), (int) anomalyArea.getHeight());
-		*/
+		
 	}
 	
 	public Rectangle2D.Double getAffectedArea() {

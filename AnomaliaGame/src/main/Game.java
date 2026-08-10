@@ -11,6 +11,7 @@ import entity.Anomaly;
 import entity.Block;
 import entity.BlockState;
 import entity.BlockType;
+import entity.Core;
 import entity.Direction;
 import entity.Player;
 
@@ -23,6 +24,8 @@ public class Game implements Runnable {
 	private Player player;
 	private List<Block> blocks;
 	private Anomaly anomaly;
+	private Core core;
+	private boolean stageCompleted = false;
 	
 	public Game() {
 		initClasses();
@@ -40,14 +43,15 @@ public class Game implements Runnable {
 	private void initClasses() {
 		player = new Player(200, 200);
 		blocks = new ArrayList<>();
+		core = new Core(GameConfig.SCREEN_WIDTH - 24, 220);
 		
-		for(int x = 0; x < GameConfig.SCREEN_WIDTH; x += GameConfig.TILE_SIZE) {
+		for(int x = 0; x < GameConfig.SCREEN_WIDTH - 48; x += GameConfig.TILE_SIZE) {
 			blocks.add(new Block(x, 492, BlockState.NORMAL, BlockType.NORMAL));
 			
 		}
 		
 		blocks.add(new Block(400, 444, BlockState.NORMAL, BlockType.BREAKABLE));
-		blocks.add(new Block(50, 444, BlockState.NORMAL, BlockType.BREAKABLE));
+		blocks.add(new Block(48, 444, BlockState.NORMAL, BlockType.BREAKABLE));
 		blocks.add(new Block(450, 300, BlockState.NORMAL, BlockType.NORMAL));
 		blocks.add(new Block(550, 200, BlockState.NORMAL, BlockType.NORMAL));
 		
@@ -80,8 +84,27 @@ public class Game implements Runnable {
 	    anomaly.update();
 	    collision.checkAnomalyDamage(player, anomaly);
 	    collision.affectBlocks(blocks, anomaly);
+	    
+	    checkVoidDeath();
+	    
+	    if (core.onPLayerTouch(player)) {
+	    	anomaly.freeze();
+	    	stageCompleted = true;
+	    }
+	    
 	}
 	
+	private void checkVoidDeath() {
+		if (player.getY() > GameConfig.VOID_Y) {
+			player.takeLife();
+		}
+		
+	}
+	
+	public boolean isStageComplete() {
+		return stageCompleted;
+	}
+
 	public void render(Graphics g) {
 		player.render(g);
 	}
@@ -142,5 +165,9 @@ public class Game implements Runnable {
 	
 	public Anomaly getAnomaly() {
 		return anomaly;
+	}
+	
+	public Core getCore() {
+		return core;
 	}
 }

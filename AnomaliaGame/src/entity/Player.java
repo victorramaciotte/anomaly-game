@@ -49,8 +49,9 @@ public class Player extends Entity {
     }
 
 	public void render(Graphics g) {
-		g.setColor(Color.BLUE);
-		g.fillRect((int) x, (int) y, (int) width, (int) height);
+		int arc = 20;
+		g.setColor(Color.getHSBColor(15f / 360f, 0.65f, 0.70f));
+		g.fillRoundRect((int) x, (int) y, (int) width, (int) height, arc, arc);
 	}
 	
 	private void applyGravity() {

@@ -7,7 +7,9 @@ import entity.Block;
 import input.KeyboardInputs;
 import input.MouseInputs;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 
 @SuppressWarnings("serial")
@@ -26,6 +28,7 @@ public class GamePanel extends JPanel {
 		addKeyListener(new KeyboardInputs(game.getPlayer()));
 		addMouseListener(mouseInputs);
 		addMouseMotionListener(mouseInputs);
+		setBackground(Color.getHSBColor(200f / 360f, 0.25f, 0.12f));
 	}	
 	
 	public void changeXDelta(int value) {
@@ -47,14 +50,21 @@ public class GamePanel extends JPanel {
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		game.getAnomaly().render(g);
 		
 		game.getPlayer().render(g);
+		
+		game.getCore().render(g);
 		
 		for (Block block : game.getBlocks()) {
 	        block.render(g);
 	    }
 		
-		game.getAnomaly().render(g);
+		if (game.isStageComplete()) {
+			g.setFont(new Font("Arial", Font.BOLD, 28));
+	        g.setColor(Color.WHITE);
+	        g.drawString("Estágio concluído!", GameConfig.SCREEN_WIDTH / 2 - 100, GameConfig.SCREEN_HEIGHT / 2);
+	    }
 	}
 
 	private void updateRectangle() {
