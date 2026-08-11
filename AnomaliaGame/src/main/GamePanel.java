@@ -48,28 +48,15 @@ public class GamePanel extends JPanel {
 		updateRectangle();
 	}
 	
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		game.getAnomaly().render(g);
-		
-		game.getPlayer().render(g);
-		
-		game.getCore().render(g);
-		
-		for (Block block : game.getBlocks()) {
-	        block.render(g);
-	    }
-		
-		if (game.isStageComplete()) {
-			g.setFont(new Font("Arial", Font.BOLD, 28));
-	        g.setColor(Color.WHITE);
-	        g.drawString("Estágio concluído!", GameConfig.SCREEN_WIDTH / 2 - 100, GameConfig.SCREEN_HEIGHT / 2);
-	    }
-	}
-
+	
 	private void updateRectangle() {
 		xDelta++;
 		yDelta++;
-		
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+	    game.render(g); 
 	}
 }

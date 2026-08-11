@@ -14,59 +14,28 @@ import entity.BlockType;
 import entity.Core;
 import entity.Direction;
 import entity.Player;
+import state.GameStateManager;
+import state.PlayingState;
 
 public class Game implements Runnable {
 	
 	private GameWindow gameWindow;
 	private GamePanel gamePanel;
-	private CollisionSystem collision;
 	private Thread gameThread;
-	private Player player;
-	private List<Block> blocks;
-	private Anomaly anomaly;
-	private Core core;
-	private boolean stageCompleted = false;
+	private GameStateManager stateManager;
+    private PlayingState playingState;
 	
 	public Game() {
-		initClasses();
+		stateManager = new GameStateManager();
+        playingState = new PlayingState();
+        stateManager.setState(playingState);
 		
-		collision = new CollisionSystem();
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
-		
 		gamePanel.requestFocus();
 		
 		startGameLoop();
 		
-	}
-
-	private void initClasses() {
-		player = new Player(200, 200);
-		blocks = new ArrayList<>();
-		core = new Core(GameConfig.SCREEN_WIDTH - 24, 220);
-		
-		for(int x = 0; x < GameConfig.SCREEN_WIDTH - 48; x += GameConfig.TILE_SIZE) {
-			blocks.add(new Block(x, 492, BlockState.NORMAL, BlockType.NORMAL));
-			
-		}
-		
-		blocks.add(new Block(400, 444, BlockState.NORMAL, BlockType.BREAKABLE));
-		blocks.add(new Block(48, 444, BlockState.NORMAL, BlockType.BREAKABLE));
-		blocks.add(new Block(450, 300, BlockState.NORMAL, BlockType.NORMAL));
-		blocks.add(new Block(550, 200, BlockState.NORMAL, BlockType.NORMAL));
-		
-		for(int y = 0; y < GameConfig.SCREEN_WIDTH; y += GameConfig.TILE_SIZE) {
-			
-			Block leftwall = new Block(-48, y, BlockState.NORMAL, BlockType.NORMAL);
-			leftwall.setVisible(false);
-			blocks.add(leftwall);
-			
-			Block rightwall = new Block(960, y, BlockState.NORMAL, BlockType.NORMAL);
-			rightwall.setVisible(false);
-			blocks.add(rightwall);
-		}
-		
-		anomaly = new Anomaly(0, 0, Direction.LEFT_TO_RIGHT);
 	}
 
 	private void startGameLoop () {
@@ -75,39 +44,17 @@ public class Game implements Runnable {
 	}
 	
 	public void update() {
-		player.updateX();
-	    collision.resolveX(player, blocks);
-
-	    player.updateY();
-	    collision.resolveY(player, blocks);
-	    
-	    anomaly.update();
-	    collision.checkAnomalyDamage(player, anomaly);
-	    collision.affectBlocks(blocks, anomaly);
-	    
-	    checkVoidDeath();
-	    
-	    if (core.onPLayerTouch(player)) {
-	    	anomaly.freeze();
-	    	stageCompleted = true;
-	    }
-	    
+		stateManager.update();
 	}
 	
-	private void checkVoidDeath() {
-		if (player.getY() > GameConfig.VOID_Y) {
-			player.takeLife();
-		}
-		
-	}
-	
-	public boolean isStageComplete() {
-		return stageCompleted;
-	}
 
 	public void render(Graphics g) {
-		player.render(g);
+		stateManager.render(g);
 	}
+	
+	public Player getPlayer() {
+        return playingState.getPlayer(); // só existe pra viabilizar o KeyboardInputs por enquanto
+    }
 	
 	@Override
 	public void run() {
@@ -155,19 +102,4 @@ public class Game implements Runnable {
 		
 	}
 	
-	public Player getPlayer() {
-		return player;
-	}
-	
-	public List<Block> getBlocks() {
-		return blocks;
-	}
-	
-	public Anomaly getAnomaly() {
-		return anomaly;
-	}
-	
-	public Core getCore() {
-		return core;
-	}
 }
