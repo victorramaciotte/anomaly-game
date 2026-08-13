@@ -14,6 +14,7 @@ import entity.BlockType;
 import entity.Core;
 import entity.Direction;
 import entity.Player;
+import main.Camera;
 import main.GameConfig;
 
 public class PlayingState implements GameState {
@@ -23,6 +24,7 @@ public class PlayingState implements GameState {
 	private Anomaly anomaly;
 	private Core core;
 	private CollisionSystem collision;
+	private Camera cam;
 	private boolean stageCompleted = false;
 	
 	public PlayingState() {
@@ -34,6 +36,7 @@ public class PlayingState implements GameState {
 		player = new Player(200, 200);
 		blocks = new ArrayList<>();
 		core = new Core(GameConfig.SCREEN_WIDTH - 24, 220);
+		cam = new Camera();
 		
 		for(int x = 0; x < GameConfig.SCREEN_WIDTH - 48; x += GameConfig.TILE_SIZE) {
 			blocks.add(new Block(x, 492, BlockState.NORMAL, BlockType.NORMAL));
@@ -77,11 +80,17 @@ public class PlayingState implements GameState {
 	    	anomaly.freeze();
 	    	stageCompleted = true;
 	    }
-		
+		//levelWidth, levelHeight)
+	    cam.follow(player, 2000, GameConfig.SCREEN_HEIGHT);
 	}
 	
 	@Override
 	public void render(Graphics g) {
+		
+		int camX = (int) cam.getX();
+		int camY = (int)cam.getY();
+		g.translate(-camX, -camY);
+		
 		anomaly.render(g);
 		
 		player.render(g);
@@ -91,6 +100,8 @@ public class PlayingState implements GameState {
 		for (Block block : blocks) {
 	        block.render(g);
 	    }
+		
+		g.translate(camX, camY);
 		
 		if (isStageComplete()) {
 			g.setFont(new Font("Arial", Font.BOLD, 28));
