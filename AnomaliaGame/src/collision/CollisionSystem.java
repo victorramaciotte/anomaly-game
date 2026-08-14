@@ -67,7 +67,7 @@ public class CollisionSystem {
 	public void checkAnomalyDamage(Player p, Anomaly anomaly) {
 	    if (p.getBounds().intersects(anomaly.getAffectedArea())) {
 	        boolean fatal = p.takeDamage(GameConfig.ANOMALY_LIGHT_DAMAGE);
-	        if(fatal) { p.takeLife(); }
+	        if(fatal) p.takeLife();
 	    }
 	}
 	

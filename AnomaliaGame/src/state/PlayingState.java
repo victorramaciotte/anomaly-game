@@ -3,6 +3,7 @@ package state;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import entity.BlockType;
 import entity.Core;
 import entity.Direction;
 import entity.Player;
+import input.KeyboardInputs;
 import level.Campaign;
 import level.LevelBuilder;
 import level.LevelData;
@@ -31,9 +33,12 @@ public class PlayingState implements GameState {
 	private Camera camera;
 	private boolean stageCompleted = false;
 	private Campaign campaign;
+	private GameStateManager stateManager;
+	private GameOverState gameOver;
 	
-	public PlayingState(Campaign campaign) {
+	public PlayingState(Campaign campaign, GameStateManager stateManager) {
 	    this.campaign = campaign;
+	    this.stateManager = stateManager;
 	    collision = new CollisionSystem();
 	    player = new Player(0, 0);
 	    loadStage(campaign.getCurrentStage(), player);
@@ -52,6 +57,9 @@ public class PlayingState implements GameState {
 	    collision.affectBlocks(blocks, anomaly);
 	    
 	    checkVoidDeath();
+	    if(player.isDead()) {
+	    	stateManager.showGameOver();
+	    }
 	    
 	    if (core.onPLayerTouch(player)) {
 	    	anomaly.freeze();
@@ -117,6 +125,23 @@ public class PlayingState implements GameState {
 	
 	public Player getPlayer() {
 	    return player;
+	}
+	
+	@Override
+	public void onKeyPressed(int keyCode) {
+	    switch (keyCode) {
+	        case KeyEvent.VK_A: player.setLeft(true); break;
+	        case KeyEvent.VK_D: player.setRight(true); break;
+	        case KeyEvent.VK_SPACE: player.requestJump(); break;
+	    }
+	}
+
+	@Override
+	public void onKeyReleased(int keyCode) {
+	    switch (keyCode) {
+	        case KeyEvent.VK_A: player.setLeft(false); break;
+	        case KeyEvent.VK_D: player.setRight(false); break;
+	    }
 	}
 
 }

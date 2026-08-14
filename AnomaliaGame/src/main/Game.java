@@ -17,6 +17,7 @@ import entity.Player;
 import level.Campaign;
 import level.StageConfig;
 import state.GameStateManager;
+import state.MenuState;
 import state.PlayingState;
 
 public class Game implements Runnable {
@@ -25,17 +26,12 @@ public class Game implements Runnable {
 	private GamePanel gamePanel;
 	private Thread gameThread;
 	private GameStateManager stateManager;
-    private PlayingState playingState;
+    private MenuState menuState;
 	
 	public Game() {
-		stateManager = new GameStateManager();
-		List<StageConfig> stages = List.of(
-			    new StageConfig(1, 200, 200, Direction.LEFT_TO_RIGHT, 1.5),
-			    new StageConfig(2, 900, 200, Direction.LEFT_TO_RIGHT, 1.5)
-			);
-		Campaign campaign = new Campaign(stages);
-		playingState = new PlayingState(campaign);
-        stateManager.setState(playingState);
+		stateManager = new GameStateManager(null);
+		menuState = new MenuState(stateManager);
+        stateManager.setState(menuState);
 		
 		gamePanel = new GamePanel(this);
 		gameWindow = new GameWindow(gamePanel);
@@ -59,9 +55,9 @@ public class Game implements Runnable {
 		stateManager.render(g);
 	}
 	
-	public Player getPlayer() {
-        return playingState.getPlayer(); // só existe pra viabilizar o KeyboardInputs por enquanto
-    }
+	public GameStateManager getStateManager() {
+		return stateManager;
+	}
 	
 	@Override
 	public void run() {

@@ -12,6 +12,7 @@ public class Player extends Entity {
 	private double hp = GameConfig.MAX_HP;
 	private int lives = GameConfig.STARTING_LIVES;
 	private double startingX, startingY, fallStartY;
+	private boolean dead;
 	
 	public Player(double x, double y) {
 		super(x, y, GameConfig.PLAYER_WIDTH, GameConfig.PLAYER_HEIGHT);
@@ -101,8 +102,15 @@ public class Player extends Entity {
     
     public void takeLife() {
     	lives--;
+    	
+    	if(lives <= 0) dead = true;
+    	
     	hp = GameConfig.MAX_HP;
     	respawn();
+    }
+    
+    public boolean isDead() {
+    	return dead;
     }
     
     public boolean takeDamage(double damage) {

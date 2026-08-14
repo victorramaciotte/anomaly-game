@@ -7,5 +7,5 @@
 #...........N...NN..................NN...................................NN#
 #..........NN.......NN...................................NNNN............NN#
 #.....NNNNNNN.....................NN.................................C...NN#
-#NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN#
-############################################################################
+#NNNNNNNNNNNNN.NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN#
+##############.#############################################################

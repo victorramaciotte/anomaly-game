@@ -17,15 +17,17 @@ public class GamePanel extends JPanel {
 	
 	private Game game;
 	private MouseInputs mouseInputs;
+	private final KeyboardInputs keyboardInputs;
 	private int xDelta = 100, yDelta = 100;
 	
 	public GamePanel(Game game) {
 		
 		mouseInputs = new MouseInputs(this);
+		keyboardInputs = new KeyboardInputs(game.getStateManager());
 		this.game = game;
 		
 		setPreferredSize(new Dimension(GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT));
-		addKeyListener(new KeyboardInputs(game.getPlayer()));
+		addKeyListener(keyboardInputs);
 		addMouseListener(mouseInputs);
 		addMouseMotionListener(mouseInputs);
 		setBackground(Color.getHSBColor(200f / 360f, 0.25f, 0.12f));
