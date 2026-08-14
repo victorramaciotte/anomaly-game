@@ -12,11 +12,12 @@ public class Block extends Entity {
 	private BlockState state;
 	private BlockType type;
 	
-	public Block(double x, double y, BlockState state, BlockType type) {
+	public Block(double x, double y, BlockType type, BlockState state) {
 		super(x, y, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
 		this.type = type;
 		this.state = state;
 	}
+	
 	
 	public void setVisible(boolean visible) { this.visible = visible; }
 	

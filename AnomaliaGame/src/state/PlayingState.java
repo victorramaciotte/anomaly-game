@@ -14,6 +14,10 @@ import entity.BlockType;
 import entity.Core;
 import entity.Direction;
 import entity.Player;
+import level.Campaign;
+import level.LevelBuilder;
+import level.LevelData;
+import level.StageConfig;
 import main.Camera;
 import main.GameConfig;
 
@@ -24,42 +28,15 @@ public class PlayingState implements GameState {
 	private Anomaly anomaly;
 	private Core core;
 	private CollisionSystem collision;
-	private Camera cam;
+	private Camera camera;
 	private boolean stageCompleted = false;
+	private Campaign campaign;
 	
-	public PlayingState() {
-		initClasses();
-	}
-	
-	private void initClasses() {
-		collision = new CollisionSystem();
-		player = new Player(200, 200);
-		blocks = new ArrayList<>();
-		core = new Core(GameConfig.SCREEN_WIDTH - 24, 220);
-		cam = new Camera();
-		
-		for(int x = 0; x < GameConfig.SCREEN_WIDTH - 48; x += GameConfig.TILE_SIZE) {
-			blocks.add(new Block(x, 492, BlockState.NORMAL, BlockType.NORMAL));
-			
-		}
-		
-		blocks.add(new Block(400, 444, BlockState.NORMAL, BlockType.BREAKABLE));
-		blocks.add(new Block(48, 444, BlockState.NORMAL, BlockType.BREAKABLE));
-		blocks.add(new Block(450, 300, BlockState.NORMAL, BlockType.NORMAL));
-		blocks.add(new Block(550, 200, BlockState.NORMAL, BlockType.NORMAL));
-		
-		for(int y = 0; y < GameConfig.SCREEN_WIDTH; y += GameConfig.TILE_SIZE) {
-			
-			Block leftwall = new Block(-48, y, BlockState.NORMAL, BlockType.NORMAL);
-			leftwall.setVisible(false);
-			blocks.add(leftwall);
-			
-			Block rightwall = new Block(960, y, BlockState.NORMAL, BlockType.NORMAL);
-			rightwall.setVisible(false);
-			blocks.add(rightwall);
-		}
-		
-		anomaly = new Anomaly(0, 0, Direction.LEFT_TO_RIGHT);
+	public PlayingState(Campaign campaign) {
+	    this.campaign = campaign;
+	    collision = new CollisionSystem();
+	    player = new Player(0, 0);
+	    loadStage(campaign.getCurrentStage(), player);
 	}
 
 	@Override
@@ -79,16 +56,21 @@ public class PlayingState implements GameState {
 	    if (core.onPLayerTouch(player)) {
 	    	anomaly.freeze();
 	    	stageCompleted = true;
+	    	
+	    	if (campaign.hasNextStage()) {
+	            campaign.advance();
+	            loadStage(campaign.getCurrentStage(), player);
+	        }
 	    }
 		//levelWidth, levelHeight)
-	    cam.follow(player, 2000, GameConfig.SCREEN_HEIGHT);
+	    camera.follow(player, 2000, GameConfig.SCREEN_HEIGHT);
 	}
 	
 	@Override
 	public void render(Graphics g) {
 		
-		int camX = (int) cam.getX();
-		int camY = (int)cam.getY();
+		int camX = (int) camera.getX();
+		int camY = (int)camera.getY();
 		g.translate(-camX, -camY);
 		
 		anomaly.render(g);
@@ -116,6 +98,17 @@ public class PlayingState implements GameState {
 			player.takeLife();
 		}
 		
+	}
+	
+	private void loadStage(StageConfig config, Player player) {
+	    LevelData levelData = LevelBuilder.build(config);
+	    player.setSpawnPoint(config.getStartX(), config.getStartY());
+	    player.respawn();
+	    blocks = levelData.getBlocks();
+	    core = new Core(levelData.getCoreX(), levelData.getCoreY());
+	    anomaly = new Anomaly(0, 0, config.getAnomalyDirection());
+	    camera = new Camera();
+	    stageCompleted = false; // reseta pro próximo estágio
 	}
 	
 	public boolean isStageComplete() {

@@ -91,6 +91,12 @@ public class Player extends Entity {
     public void respawn() {
     	setX(startingX);
     	setY(startingY);
+    	resetJumps();
+    }
+    
+    public void setSpawnPoint(double x, double y) {
+        this.startingX = x;
+        this.startingY = y;
     }
     
     public void takeLife() {

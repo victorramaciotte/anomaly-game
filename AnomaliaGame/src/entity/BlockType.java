@@ -2,6 +2,7 @@ package entity;
 
 public enum BlockType {
     NORMAL(false, false),
+    FILL(false, false),
     BREAKABLE(true, false),
     SLIPPERY(false, true);
 

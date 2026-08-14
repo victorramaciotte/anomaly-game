@@ -14,6 +14,8 @@ import entity.BlockType;
 import entity.Core;
 import entity.Direction;
 import entity.Player;
+import level.Campaign;
+import level.StageConfig;
 import state.GameStateManager;
 import state.PlayingState;
 
@@ -27,7 +29,12 @@ public class Game implements Runnable {
 	
 	public Game() {
 		stateManager = new GameStateManager();
-        playingState = new PlayingState();
+		List<StageConfig> stages = List.of(
+			    new StageConfig(1, 200, 200, Direction.LEFT_TO_RIGHT, 1.5, "levels/stage1.txt"),
+			    new StageConfig(2, 900, 200, Direction.LEFT_TO_RIGHT, 1.5, "levels/stage2.txt")
+			);
+		Campaign campaign = new Campaign(stages);
+		playingState = new PlayingState(campaign);
         stateManager.setState(playingState);
 		
 		gamePanel = new GamePanel(this);
