@@ -13,7 +13,7 @@ public class StageConfig {
 	double startX, startY;
 	Direction anomalyDirection;
 	private List<String> layout;
-	private static final String LEVELS_DIR = "resources/levels/stage";
+	private static final String LEVELS_DIR = "levels/stage";
     private static final String EXT = ".txt";
     
     public StageConfig(int index, double startX, double startY, Direction anomalyDirection, double anomalySpeed) {
