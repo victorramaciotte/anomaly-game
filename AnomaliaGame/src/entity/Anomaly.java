@@ -11,13 +11,14 @@ public class Anomaly extends Entity {
 	private double startX = 0, startY = 0;
 	private int affectedWidth = 0, affectedHeight = 0;
 	private boolean frozen = false;
+	private double anomalyLevelSpeed = 1.0;
 	
-	public Anomaly(double x, double y, Direction d) {
+	public Anomaly(double x, double y, Direction d, double anomalyLevelSpeed) {
 		super(x, y, GameConfig.TILE_SIZE, GameConfig.SCREEN_HEIGHT);
 		this.d = d;
 		this.startX = x;
 		this.startY = y;
-		
+		this.anomalyLevelSpeed = anomalyLevelSpeed;
 	}
 	
 	
@@ -31,8 +32,8 @@ public class Anomaly extends Entity {
 	    	if(d.dy > 0 && y > GameConfig.SCREEN_HEIGHT) { return; }
 	    	else if(d.dy < 0 && y < 0) { return; }
 	    }
-	    velocityX = d.dx * GameConfig.ANOMALY_BASE_SPEED;
-		velocityY = d.dy * GameConfig.ANOMALY_BASE_SPEED;
+	    velocityX = d.dx * GameConfig.ANOMALY_BASE_SPEED * anomalyLevelSpeed;
+		velocityY = d.dy * GameConfig.ANOMALY_BASE_SPEED * anomalyLevelSpeed;
 	    x += velocityX;
 	    y += velocityY;
 	}

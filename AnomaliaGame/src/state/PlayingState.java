@@ -106,7 +106,7 @@ public class PlayingState implements GameState {
 	    player.respawn();
 	    blocks = levelData.getBlocks();
 	    core = new Core(levelData.getCoreX(), levelData.getCoreY());
-	    anomaly = new Anomaly(0, 0, config.getAnomalyDirection());
+	    anomaly = new Anomaly(0, 0, config.getAnomalyDirection(), config.getAnomalySpeed());
 	    camera = new Camera();
 	    stageCompleted = false; // reseta pro próximo estágio
 	}
