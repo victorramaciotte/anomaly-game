@@ -27,5 +27,5 @@ public final class GameConfig {
     public static final double FALL_DAMAGE_MIN_HEIGHT = 210;
     public static final double FALL_DAMAGE_AMOUNT = 25;
 
-    public static final double VOID_Y = SCREEN_HEIGHT + 100;
+    public static final double VOID_MARGIN = 100;
 }

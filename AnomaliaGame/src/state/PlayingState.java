@@ -38,6 +38,7 @@ public class PlayingState implements GameState {
 	private GameOverState gameOver;
 	private double elapsedSeconds;
 	private int margin = GameConfig.HUD_MARGIN;
+	int levelHeight, levelWidth;
 	
 	public PlayingState(Campaign campaign, GameStateManager stateManager) {
 	    this.campaign = campaign;
@@ -61,7 +62,7 @@ public class PlayingState implements GameState {
 	    
 	    checkVoidDeath();
 	    if(player.isDead()) {
-	    	stateManager.showGameOver();
+	    	stateManager.showGameOver(false);
 	    }
 	    
 	    if (core.onPLayerTouch(player)) {
@@ -72,6 +73,9 @@ public class PlayingState implements GameState {
 	            campaign.advance();
 	            loadStage(campaign.getCurrentStage(), player);
 	        }
+	    	else {
+	    		stateManager.setState(new GameOverState(stateManager, true)); //vitória
+	    	}
 	    }
 		//levelWidth, levelHeight)
 	    camera.follow(player, 2000, GameConfig.SCREEN_HEIGHT);
@@ -100,11 +104,11 @@ public class PlayingState implements GameState {
 		
 		renderHUD(g);
 		
-		if (isStageComplete()) {
+	/*	if (isStageComplete()) {
 			g.setFont(new Font("Arial", Font.BOLD, 28));
 	        g.setColor(Color.WHITE);
 	        g.drawString("Estágio concluído!", GameConfig.SCREEN_WIDTH / 2 - 100, GameConfig.SCREEN_HEIGHT / 2);
-	    }
+	    } */
 		
 		
 	}
@@ -163,19 +167,23 @@ public class PlayingState implements GameState {
 	}
 
 	private void checkVoidDeath() {
-		if (player.getY() > GameConfig.VOID_Y) {
-			player.takeLife();
+		if (player.getY() > levelHeight + GameConfig.VOID_MARGIN) {
+			if (player.takeLife()) {
+	            stateManager.showGameOver(false);
+	        }
 		}
 		
 	}
 	
 	private void loadStage(StageConfig config, Player player) {
 	    LevelData levelData = LevelBuilder.build(config);
+	    levelWidth = levelData.getLevelWidth(); 
+	    levelHeight = levelData.getLevelHeight();
 	    player.setSpawnPoint(config.getStartX(), config.getStartY());
 	    player.respawn();
 	    blocks = levelData.getBlocks();
 	    core = new Core(levelData.getCoreX(), levelData.getCoreY());
-	    anomaly = new Anomaly(0, 0, config.getAnomalyDirection(), config.getAnomalySpeed(), levelData.getLevelWidth(), levelData.getLevelHeight());
+	    anomaly = new Anomaly(0, 0, config.getAnomalyDirection(), config.getAnomalySpeed(), levelWidth, levelHeight);
 	    camera = new Camera();
 	    stageCompleted = false; // reseta pro próximo estágio
 	}

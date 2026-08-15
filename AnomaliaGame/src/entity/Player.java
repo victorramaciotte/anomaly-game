@@ -100,13 +100,14 @@ public class Player extends Entity {
         this.startingY = y;
     }
     
-    public void takeLife() {
+    public boolean takeLife() {
     	lives--;
     	
     	if(lives <= 0) dead = true;
     	
     	hp = GameConfig.MAX_HP;
     	respawn();
+    	return dead;
     }
     
     public boolean isDead() {

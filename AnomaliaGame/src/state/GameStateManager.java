@@ -35,7 +35,7 @@ public class GameStateManager {
         currentState = new MenuState(this);
     }
 
-    public void showGameOver() {
-        currentState = new GameOverState(this);
+    public void showGameOver(boolean victory) {
+        currentState = new GameOverState(this, victory);
     }
 }
