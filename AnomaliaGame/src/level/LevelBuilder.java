@@ -15,6 +15,8 @@ public class LevelBuilder {
         Double coreX = null, coreY = null;
         List<Block> blocks = new ArrayList<>();
         List<String> layout = config.getLayout();
+        int levelWidth = layout.get(0).length() * tile;
+        int levelHeight = layout.size() * tile;
 
         for (int row = 0; row < layout.size(); row++) {
             String line = layout.get(row);
@@ -41,7 +43,7 @@ public class LevelBuilder {
             throw new IllegalStateException("Layout sem núcleo definido: " + config.getIndex());
         }
 
-        return new LevelData(blocks, coreX, coreY);
+        return new LevelData(blocks, coreX, coreY, levelHeight, levelWidth);
     }
 
     private static Block parseChar(char c, double x, double y) {

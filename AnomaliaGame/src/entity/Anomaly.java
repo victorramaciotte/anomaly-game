@@ -12,26 +12,29 @@ public class Anomaly extends Entity {
 	private int affectedWidth = 0, affectedHeight = 0;
 	private boolean frozen = false;
 	private double anomalyLevelSpeed = 1.0;
+	int levelHeight, levelWidth;
 	
-	public Anomaly(double x, double y, Direction d, double anomalyLevelSpeed) {
+	public Anomaly(double x, double y, Direction d, double anomalyLevelSpeed, int levelWidth, int levelHeight) {
 		super(x, y, GameConfig.TILE_SIZE, GameConfig.SCREEN_HEIGHT);
 		this.d = d;
 		this.startX = x;
 		this.startY = y;
 		this.anomalyLevelSpeed = anomalyLevelSpeed;
+		this.levelWidth = levelWidth;
+		this.levelHeight = levelHeight;
 	}
 	
 	
 	public void update() {
 		if (frozen) return; 
 	    if(d.dx != 0) {
-	    	if(d.dx > 0 && x > GameConfig.SCREEN_WIDTH) { return; }
+	    	if(d.dx > 0 && x > levelWidth) { return; }
 	    	else if(d.dx < 0 && x < 0) { return; }
 	    }
 	    else {
-	    	if(d.dy > 0 && y > GameConfig.SCREEN_HEIGHT) { return; }
+	    	if(d.dy > 0 && y > levelHeight) { return; }
 	    	else if(d.dy < 0 && y < 0) { return; }
-	    }
+	    } 
 	    velocityX = d.dx * GameConfig.ANOMALY_BASE_SPEED * anomalyLevelSpeed;
 		velocityY = d.dy * GameConfig.ANOMALY_BASE_SPEED * anomalyLevelSpeed;
 	    x += velocityX;
@@ -58,13 +61,13 @@ public class Anomaly extends Entity {
 		
 		if(d.dx != 0) {
 			affectedWidth = (int) Math.abs(startX - x);
-			affectedHeight = GameConfig.SCREEN_HEIGHT;
+			affectedHeight = levelHeight;
 			areaX = Math.min(startX, x);
 	        areaY = 0;
 		}
 		else {
 			affectedHeight = (int) Math.abs(startY - y);
-			affectedWidth = GameConfig.SCREEN_WIDTH;
+			affectedWidth = levelWidth;
 	        areaX = 0;
 	        areaY = Math.min(startY, y);
 		}
