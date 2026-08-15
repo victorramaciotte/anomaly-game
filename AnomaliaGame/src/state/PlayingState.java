@@ -2,6 +2,7 @@ package state;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class PlayingState implements GameState {
 	private Campaign campaign;
 	private GameStateManager stateManager;
 	private GameOverState gameOver;
+	private double elapsedSeconds;
+	private int margin = GameConfig.HUD_MARGIN;
 	
 	public PlayingState(Campaign campaign, GameStateManager stateManager) {
 	    this.campaign = campaign;
@@ -72,6 +75,8 @@ public class PlayingState implements GameState {
 	    }
 		//levelWidth, levelHeight)
 	    camera.follow(player, 2000, GameConfig.SCREEN_HEIGHT);
+	    
+	    elapsedSeconds += GameConfig.FIXED_DELTA;
 	}
 	
 	@Override
@@ -93,14 +98,70 @@ public class PlayingState implements GameState {
 		
 		g.translate(camX, camY);
 		
+		renderHUD(g);
+		
 		if (isStageComplete()) {
 			g.setFont(new Font("Arial", Font.BOLD, 28));
 	        g.setColor(Color.WHITE);
 	        g.drawString("Estágio concluído!", GameConfig.SCREEN_WIDTH / 2 - 100, GameConfig.SCREEN_HEIGHT / 2);
 	    }
 		
+		
 	}
 	
+	private void renderHUD(Graphics g) {
+		FontMetrics metrics = g.getFontMetrics(new Font("SansSerif", Font.BOLD, 16));
+		
+		g.setFont(new Font("SansSerif", Font.BOLD, 16));
+		g.setColor(Color.WHITE);
+		int width = metrics.stringWidth("Nível: " + campaign.getCurrentStageNumber() + "/" + campaign.getTotalStages());
+        g.drawString("Nível: " + campaign.getCurrentStageNumber() + "/" + campaign.getTotalStages(), GameConfig.SCREEN_WIDTH - width - margin, margin + metrics.getAscent());
+        
+        
+        width = metrics.stringWidth("Tempo: " + formatTime(elapsedSeconds));
+        g.drawString("Tempo: " + formatTime(elapsedSeconds), (GameConfig.SCREEN_WIDTH - width)/2, margin + metrics.getAscent());
+        
+        renderLives(g);
+        renderHpBar(g);
+		
+	}
+	
+	private String formatTime(double seconds) {
+        int total = (int) seconds;
+        return String.format("%02d:%02d", total / 60, total % 60);
+    }
+	
+	private void renderLives(Graphics g) {
+		int diameter = 16;
+	    int spacing = 24; // espaço entre uma bolinha e a próxima
+	    int startX = 20;
+	    int y = margin + spacing;
+
+	    for (int i = 0; i < player.getLives(); i++) {
+	        g.setColor(Color.RED);
+	        g.fillOval(startX + i * spacing, y, diameter, diameter);
+	    }
+	}
+	
+	private void renderHpBar(Graphics g) {
+	    int x = margin;
+	    int y = margin;
+	    int width = 200;
+	    int height = 16;
+
+	    double hpRatio = player.getHp() / GameConfig.MAX_HP; // valor entre 0.0 e 1.0
+	    int filledWidth = (int) (width * hpRatio);
+
+	    g.setColor(Color.DARK_GRAY);
+	    g.fillRect(x, y, width, height); // fundo, representa a barra "vazia"
+
+	    g.setColor(Color.GREEN);
+	    g.fillRect(x, y, filledWidth, height); // preenchimento, proporcional ao HP
+
+	    g.setColor(Color.WHITE);
+	    g.drawRect(x, y, width, height); // contorno
+	}
+
 	private void checkVoidDeath() {
 		if (player.getY() > GameConfig.VOID_Y) {
 			player.takeLife();

@@ -31,6 +31,7 @@ public class GamePanel extends JPanel {
 		addMouseListener(mouseInputs);
 		addMouseMotionListener(mouseInputs);
 		setBackground(Color.getHSBColor(200f / 360f, 0.25f, 0.12f));
+		setFocusable(true);
 	}	
 	
 	public void changeXDelta(int value) {

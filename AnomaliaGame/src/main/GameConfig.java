@@ -5,9 +5,11 @@ public final class GameConfig {
 
     public static final int SCREEN_WIDTH = 960;
     public static final int SCREEN_HEIGHT = 540;
+    public static final int HUD_MARGIN = 10;
     public static final int FPS = 120;
     public static final int UPS = 200;
     public static final int TILE_SIZE = 48;
+    public static final double FIXED_DELTA = 1.0 / FPS;
 
     public static final double PLAYER_WIDTH = 34;
     public static final double PLAYER_HEIGHT = 48;

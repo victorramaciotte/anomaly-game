@@ -2,6 +2,7 @@ package state;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 import main.GameConfig;
@@ -26,10 +27,14 @@ public class GameOverState implements GameState {
 
 	    g.setFont(new Font("Arial", Font.BOLD, 32));
 	    g.setColor(Color.WHITE);
-	    g.drawString("Game Over", GameConfig.SCREEN_WIDTH / 2 - 80, GameConfig.SCREEN_HEIGHT / 2 - 20);
+	    FontMetrics metrics = g.getFontMetrics(new Font("Arial", Font.BOLD, 32));
+	    int width = metrics.stringWidth("Game Over");
+	    g.drawString("Game Over", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 - 20);
 
 	    g.setFont(new Font("Arial", Font.PLAIN, 18));
-	    g.drawString("Pressione qualquer tecla para reiniciar", GameConfig.SCREEN_WIDTH / 2 - 140, GameConfig.SCREEN_HEIGHT / 2 + 20);
+	    metrics = g.getFontMetrics(new Font("Arial", Font.PLAIN, 18));
+	    width = metrics.stringWidth("Pressione qualquer tecla para reiniciar");
+	    g.drawString("Pressione qualquer tecla para reiniciar", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 20);
 	}
 
 	@Override

@@ -137,4 +137,12 @@ public class Player extends Entity {
             takeDamage(GameConfig.FALL_DAMAGE_AMOUNT);
         }
     }
+
+	public int getLives() {
+		return lives;
+	}
+
+	public double getHp() {
+		return hp;
+	}
 }

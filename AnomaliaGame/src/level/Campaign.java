@@ -13,6 +13,14 @@ public class Campaign {
     public StageConfig getCurrentStage() {
         return stages.get(currentIndex);
     }
+    
+    public int getTotalStages() {
+    	return stages.size();
+    }
+    
+    public int getCurrentStageNumber() {
+    	return currentIndex + 1;
+    }
 
     public boolean hasNextStage() {
         return currentIndex + 1 < stages.size();
