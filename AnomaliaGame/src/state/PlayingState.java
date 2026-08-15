@@ -202,6 +202,7 @@ public class PlayingState implements GameState {
 	        case KeyEvent.VK_A: player.setLeft(true); break;
 	        case KeyEvent.VK_D: player.setRight(true); break;
 	        case KeyEvent.VK_SPACE: player.requestJump(); break;
+	        case KeyEvent.VK_P: stateManager.setState(new PauseState(stateManager, this)); break;
 	    }
 	}
 

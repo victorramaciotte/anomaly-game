@@ -27,6 +27,7 @@ public class Game implements Runnable {
 	private Thread gameThread;
 	private GameStateManager stateManager;
     private MenuState menuState;
+    private volatile boolean running = true;
 	
 	public Game() {
 		stateManager = new GameStateManager(null);
@@ -34,11 +35,23 @@ public class Game implements Runnable {
         stateManager.setState(menuState);
 		
 		gamePanel = new GamePanel(this);
-		gameWindow = new GameWindow(gamePanel);
+		gameWindow = new GameWindow(gamePanel, this);
 		gamePanel.requestFocusInWindow();
 		
 		startGameLoop();
 		
+	}
+	
+	public void stop() {
+		System.out.println("Encerrando o jogo...");
+	    running = false;
+	    try {
+	        gameThread.join();
+	    } catch (InterruptedException e) {
+	        Thread.currentThread().interrupt();
+	    }
+
+	    System.exit(0);
 	}
 
 	private void startGameLoop () {
@@ -74,7 +87,7 @@ public class Game implements Runnable {
 		double deltaU = 0;
 		double deltaF = 0;
 
-		while (true) {
+		while (running) {
 			
 			long currentTime = System.nanoTime();
 			
