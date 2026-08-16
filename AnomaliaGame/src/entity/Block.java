@@ -22,7 +22,7 @@ public class Block extends Entity {
 	public void setVisible(boolean visible) { this.visible = visible; }
 	
 	public void render(Graphics g) {
-		if (!visible || !isSolid()) return;
+		if (!isVisible() || !isSolid()) return;
 		
 		g.setColor(Color.getHSBColor(200f / 360f, 0.20f, 0.35f));
 		if(state == BlockState.CORRUPTED) { g.setColor(Color.getHSBColor(80f / 360f, 0.45f, 0.40f)); }
@@ -54,6 +54,10 @@ public class Block extends Entity {
 	
 	public boolean isSolid() {
 		return state != BlockState.DESTROID;
+	}
+	
+	public boolean isVisible() {
+		return type != BlockType.INVISIBLE;
 	}
 	
 	public void stepOn() {
