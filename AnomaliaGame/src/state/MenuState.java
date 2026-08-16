@@ -12,6 +12,8 @@ import main.GameConfig;
 
 public class MenuState implements GameState {
 	private GameStateManager stateManager;
+	private boolean blinkVisible = true;
+	private double blinkTimer = 0;
 
 	public MenuState(GameStateManager stateManager) {
 		this.stateManager = stateManager;
@@ -19,8 +21,7 @@ public class MenuState implements GameState {
 	
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
-		
+		updateBlink();
 	}
 
 	@Override
@@ -28,17 +29,37 @@ public class MenuState implements GameState {
 		g.setColor(Color.BLACK);
 	    g.fillRect(0, 0, GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT);
 
-	    g.setFont(new Font("Arial", Font.BOLD, 32));
+	    g.setFont(new Font("Arial", Font.BOLD, 52));
 	    g.setColor(Color.WHITE);
-	    FontMetrics metrics = g.getFontMetrics(new Font("Arial", Font.BOLD, 32));
-	    int width = metrics.stringWidth("Anomalia");
-	    g.drawString("Anomalia", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 - 20);
+	    FontMetrics metrics = g.getFontMetrics(new Font("Arial", Font.BOLD, 52));
+	    int width = metrics.stringWidth("ANOMALIA");
+	    g.drawString("ANOMALIA", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 - 20);
 
+	    g.setColor(Color.LIGHT_GRAY);
 	    g.setFont(new Font("Arial", Font.PLAIN, 18));
 	    metrics = g.getFontMetrics(new Font("Arial", Font.PLAIN, 18));
+	    
+	    width = metrics.stringWidth("A/D: mover     ESPAÇO: pulo / pulo duplo");
+	    g.drawString("\"A/D: mover     ESPAÇO: pulo / pulo duplo\"", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 30);
+	    
+	    width = metrics.stringWidth("Chegue ao núcleo antes que a anomalia consuma o nível");
+	    g.drawString("\"Chegue ao núcleo antes que a anomalia consuma o nível\"", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 50);
+	    
+	    g.setColor(Color.getHSBColor(200f / 360f, 0.55f, 0.98f));
+	    g.setFont(new Font("Arial", Font.BOLD, 22));
+	    metrics = g.getFontMetrics(new Font("Arial", Font.BOLD, 22));
 	    width = metrics.stringWidth("Pressione qualquer tecla para começar o jogo");
-	    g.drawString("Pressione qualquer tecla para começar o jogo", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 20);
-		
+	    if (blinkVisible) {
+	    	g.drawString("Pressione qualquer tecla para começar o jogo", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 150);
+	    }
+	}
+	
+	public void updateBlink() {
+	    blinkTimer += GameConfig.FIXED_DELTA;
+	    if (blinkTimer >= 0.95) {
+	        blinkVisible = !blinkVisible;
+	        blinkTimer = 0;
+	    }
 	}
 
 	@Override
