@@ -49,6 +49,7 @@ public class LevelBuilder {
     private static Block parseChar(char c, double x, double y) {
         switch (c) {
             case '#': return new Block(x, y, BlockType.INVISIBLE, BlockState.NORMAL);
+            case 'F': return new Block(x, y, BlockType.FILL, BlockState.NORMAL);
             case 'N': return new Block(x, y, BlockType.NORMAL, BlockState.NORMAL);
             case 'B': return new Block(x, y, BlockType.BREAKABLE, BlockState.NORMAL);
             case 'b': return new Block(x, y, BlockType.BREAKABLE, BlockState.CRACKED);
