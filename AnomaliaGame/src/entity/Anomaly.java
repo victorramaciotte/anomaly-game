@@ -17,11 +17,14 @@ public class Anomaly extends Entity {
 	public Anomaly(double x, double y, Direction d, double anomalyLevelSpeed, int levelWidth, int levelHeight) {
 		super(x, y, GameConfig.TILE_SIZE, GameConfig.SCREEN_HEIGHT);
 		this.d = d;
-		this.startX = x;
-		this.startY = y;
+		if (d == Direction.RIGHT_TO_LEFT) this.x = levelWidth;
+		if (d == Direction.BOTTOM_TO_TOP) this.y = levelHeight;
 		this.anomalyLevelSpeed = anomalyLevelSpeed;
 		this.levelWidth = levelWidth;
 		this.levelHeight = levelHeight;
+		
+		this.startX = this.x;
+		this.startY = this.y;
 	}
 	
 	
