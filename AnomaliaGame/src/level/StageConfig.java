@@ -1,8 +1,13 @@
 package level;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import entity.Direction;
@@ -13,7 +18,7 @@ public class StageConfig {
 	double startX, startY;
 	Direction anomalyDirection;
 	private List<String> layout;
-	private static final String LEVELS_DIR = "levels/stage";
+	private static final String LEVELS_DIR = "resources/levels/stage";
     private static final String EXT = ".txt";
     
     public StageConfig(int index, double startX, double startY, Direction anomalyDirection, double anomalySpeed) {
@@ -35,11 +40,20 @@ public class StageConfig {
 	}
 	
 	private List<String> loadLayout(String path) {
-        try {
-            return Files.readAllLines(Paths.get(path));
-        } catch (IOException e) {
-            throw new RuntimeException("Falha ao carregar layout: " + path, e);
-        }
+		List<String> lines = new ArrayList<>();
+		
+		try (InputStream is = getClass().getClassLoader().getResourceAsStream(path);
+		         BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+
+		        String line;
+		        while ((line = reader.readLine()) != null) {
+		            lines.add(line);
+		        }
+		    } catch (IOException | NullPointerException e) {
+		        throw new RuntimeException("Falha ao carregar layout: " + path, e);
+		    }
+
+		    return lines;
     }
 	
 	public int getIndex() { return index; }
