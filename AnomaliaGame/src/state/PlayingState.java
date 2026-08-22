@@ -5,8 +5,13 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import collision.CollisionSystem;
 import entity.Anomaly;
@@ -21,6 +26,7 @@ import level.Campaign;
 import level.LevelBuilder;
 import level.LevelData;
 import level.StageConfig;
+import main.Background;
 import main.Camera;
 import main.GameConfig;
 
@@ -39,6 +45,7 @@ public class PlayingState implements GameState {
 	private double elapsedSeconds;
 	private int margin = GameConfig.HUD_MARGIN;
 	int levelHeight, levelWidth;
+	private List<Background> background;
 	
 	public PlayingState(Campaign campaign, GameStateManager stateManager) {
 	    this.campaign = campaign;
@@ -78,13 +85,16 @@ public class PlayingState implements GameState {
 	    	}
 	    }
 		//levelWidth, levelHeight)
-	    camera.follow(player, 2000, GameConfig.SCREEN_HEIGHT);
+	    camera.follow(player, 2000, GameConfig.SCREEN_HEIGHT, campaign.getCurrentStage().getCameraVerticalOffset());
 	    
 	    elapsedSeconds += GameConfig.FIXED_DELTA;
 	}
 	
 	@Override
 	public void render(Graphics g) {
+		for (Background layer : background) {
+	        layer.render(g, camera);
+	    }
 		
 		int camX = (int) camera.getX();
 		int camY = (int)camera.getY();
@@ -179,6 +189,19 @@ public class PlayingState implements GameState {
 	    LevelData levelData = LevelBuilder.build(config);
 	    levelWidth = levelData.getLevelWidth(); 
 	    levelHeight = levelData.getLevelHeight();
+	    background = new ArrayList<>();
+	    
+	    List<List<String>> layerPaths = config.getBackgroundLayers();
+	    double[] scrollFactors = {0.1, 0.3, 0.5, 0.8}; // fatores padrão, do mais distante pro mais próximo
+
+	    for (int i = 0; i < layerPaths.size(); i++) {
+	        List<BufferedImage> variants = new ArrayList<>();
+	        for (String path : layerPaths.get(i)) {
+	            variants.add(loadImage(path));
+	        }
+	        background.add(new Background(variants, scrollFactors[i]));
+	    }
+	    
 	    player.setSpawnPoint(config.getStartX(), config.getStartY());
 	    player.respawn();
 	    blocks = levelData.getBlocks();
@@ -186,6 +209,14 @@ public class PlayingState implements GameState {
 	    anomaly = new Anomaly(0, 0, config.getAnomalyDirection(), config.getAnomalySpeed(), levelWidth, levelHeight);
 	    camera = new Camera();
 	    stageCompleted = false; // reseta pro próximo estágio
+	}
+	
+	private BufferedImage loadImage(String path) {
+	    try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
+	        return ImageIO.read(is);
+	    } catch (IOException e) {
+	        throw new RuntimeException("Falha ao carregar imagem: " + path, e);
+	    }
 	}
 	
 	public boolean isStageComplete() {
