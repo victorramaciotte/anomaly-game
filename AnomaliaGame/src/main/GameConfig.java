@@ -20,9 +20,9 @@ public final class GameConfig {
     public static final int MAX_JUMPS = 2;
 
     public static final double MAX_HP = 100;
-    public static final int STARTING_LIVES = 3;
-    public static final double ANOMALY_DAMAGE_PER_SECOND = 15.0/UPS;
-    public static final double ANOMALY_LIGHT_DAMAGE = 5.0/UPS;
+    public static final int STARTING_LIVES = 5;
+    public static final double ANOMALY_DAMAGE_PER_SECOND = 1.5/UPS;
+    public static final double ANOMALY_LIGHT_DAMAGE = 0.2/UPS;
 
     public static final double FALL_DAMAGE_MIN_HEIGHT = 210;
     public static final double FALL_DAMAGE_AMOUNT = 25;

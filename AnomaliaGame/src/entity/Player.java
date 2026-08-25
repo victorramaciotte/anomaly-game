@@ -92,6 +92,8 @@ public class Player extends Entity {
     public void respawn() {
     	setX(startingX);
     	setY(startingY);
+    	fallStartY = startingY;
+    	setOnGround(false);
     	resetJumps();
     }
     

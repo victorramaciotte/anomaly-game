@@ -39,11 +39,11 @@ public class MenuState implements GameState {
 	    g.setFont(new Font("Arial", Font.PLAIN, 18));
 	    metrics = g.getFontMetrics(new Font("Arial", Font.PLAIN, 18));
 	    
-	    width = metrics.stringWidth("A/D: mover     ESPAÇO: pulo / pulo duplo");
-	    g.drawString("\"A/D: mover     ESPAÇO: pulo / pulo duplo\"", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 30);
+	    width = metrics.stringWidth("A / D / setas: mover     ESPAÇO / W / seta pra cima: pulo / pulo duplo   P: pause");
+	    g.drawString("A / D / setas: mover     ESPAÇO / W / seta pra cima: pulo / pulo duplo   P: pause", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 30);
 	    
 	    width = metrics.stringWidth("Chegue ao núcleo antes que a anomalia consuma o nível");
-	    g.drawString("\"Chegue ao núcleo antes que a anomalia consuma o nível\"", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 50);
+	    g.drawString("Chegue ao núcleo antes que a anomalia consuma o nível", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 100);
 	    
 	    g.setColor(Color.getHSBColor(200f / 360f, 0.55f, 0.98f));
 	    g.setFont(new Font("Arial", Font.BOLD, 22));
