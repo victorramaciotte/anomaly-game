@@ -50,12 +50,12 @@ public class Anomaly extends Entity {
 	
 	public void render(Graphics g) {
 	/**	g.setColor(Color.RED);
-		g.fillRect((int) x, (int) y, (int) width, (int) height); **/
+		g.fillRect((int) x, (int) y, (int) width, (int) height); 
 		
 		Rectangle2D.Double anomalyArea = new Rectangle2D.Double();
 		anomalyArea = getAffectedArea();
 		g.setColor(Color.getHSBColor(80f / 360f, 0.35f, 0.18f));
-		g.fillRect((int) anomalyArea.getX(), (int) anomalyArea.getY(), (int) anomalyArea.getWidth(), (int) anomalyArea.getHeight());
+		g.fillRect((int) anomalyArea.getX(), (int) anomalyArea.getY(), (int) anomalyArea.getWidth(), (int) anomalyArea.getHeight());**/
 		
 	}
 	

@@ -28,6 +28,7 @@ import level.LevelData;
 import level.StageConfig;
 import main.Background;
 import main.Camera;
+import main.CorruptionOverlay;
 import main.GameConfig;
 
 public class PlayingState implements GameState {
@@ -46,6 +47,7 @@ public class PlayingState implements GameState {
 	private int margin = GameConfig.HUD_MARGIN;
 	int levelHeight, levelWidth;
 	private List<Background> background;
+	private CorruptionOverlay corruptionOverlay;
 	
 	public PlayingState(Campaign campaign, GameStateManager stateManager) {
 	    this.campaign = campaign;
@@ -66,6 +68,8 @@ public class PlayingState implements GameState {
 	    anomaly.update();
 	    collision.checkAnomalyDamage(player, anomaly);
 	    collision.affectBlocks(blocks, anomaly);
+	    
+	    corruptionOverlay.update();
 	    
 	    checkVoidDeath();
 	    if(player.isDead()) {
@@ -93,7 +97,7 @@ public class PlayingState implements GameState {
 	@Override
 	public void render(Graphics g) {
 		for (Background layer : background) {
-	        layer.render(g, camera);
+	        layer.render(g, camera, anomaly.getAffectedArea());
 	    }
 		
 		int camX = (int) camera.getX();
@@ -110,8 +114,9 @@ public class PlayingState implements GameState {
 	        block.render(g);
 	    }
 		
-		g.translate(camX, camY);
 		
+		g.translate(camX, camY);
+		corruptionOverlay.render(g, camera, anomaly.getAffectedArea());
 		renderHUD(g);
 		
 	/*	if (isStageComplete()) {
@@ -192,6 +197,7 @@ public class PlayingState implements GameState {
 	    background = new ArrayList<>();
 	    
 	    List<List<String>> layerPaths = config.getBackgroundLayers();
+	    List<List<String>> corruptedPaths = config.getCorruptedBackgroundLayers();
 	    double[] scrollFactors = {0.1, 0.3, 0.5, 0.8}; // fatores padrão, do mais distante pro mais próximo
 
 	    for (int i = 0; i < layerPaths.size(); i++) {
@@ -199,8 +205,23 @@ public class PlayingState implements GameState {
 	        for (String path : layerPaths.get(i)) {
 	            variants.add(loadImage(path));
 	        }
-	        background.add(new Background(variants, scrollFactors[i]));
+	        
+	        List<BufferedImage> corruptedVariants = new ArrayList<>();
+	        if (i < corruptedPaths.size()) {
+	            for (String path : corruptedPaths.get(i)) {
+	                corruptedVariants.add(loadImage(path));
+	            }
+	        }
+	        
+	        double factor = (i < scrollFactors.length) ? scrollFactors[i] : 1.0;
+	        background.add(new Background(variants, corruptedVariants, scrollFactors[i]));
 	    }
+	    
+	    List<BufferedImage> overlayImages = new ArrayList<>();
+	    for (String path : config.getOverlayFrames()) {
+	        overlayImages.add(loadImage(path));
+	    }
+	    corruptionOverlay = new CorruptionOverlay(overlayImages, 20); // 20 ticks por frame, ajuste ao gosto
 	    
 	    player.setSpawnPoint(config.getStartX(), config.getStartY());
 	    player.respawn();

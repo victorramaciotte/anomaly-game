@@ -19,9 +19,11 @@ public class StageConfig {
 	Direction anomalyDirection;
 	private List<String> layout;
 	private List<List<String>> backgroundLayers;
+	private List<List<String>> corruptedBackgroundLayers;
 	private static final String LEVELS_DIR = "resources/levels/stage";
     private static final String EXT = ".txt";
     private double cameraVerticalOffset;
+    private List<String> overlayFrames;
     
     public StageConfig(int index, double startX, double startY, Direction anomalyDirection, double anomalySpeed) {
 		this.index = index;
@@ -31,6 +33,8 @@ public class StageConfig {
 		this.anomalySpeed = anomalySpeed;
 		this.layout = loadLayout(LEVELS_DIR + index + EXT);
 		this.backgroundLayers = discoverBackgroundLayers(index);
+		this.corruptedBackgroundLayers = discoverCorruptedLayers(index);
+		this.overlayFrames = discoverOverlayFrames(index);
 		
 		if (anomalyDirection == Direction.LEFT_TO_RIGHT || anomalyDirection == Direction.RIGHT_TO_LEFT) {
 			this.cameraVerticalOffset = 100;
@@ -104,6 +108,54 @@ public class StageConfig {
 
         return variants;
     }
+    
+    private List<List<String>> discoverCorruptedLayers(int stageIndex) {
+        List<List<String>> layers = new ArrayList<>();
+        String basePath = "resources/images/backgrounds/stage" + stageIndex + "/";
+
+        int layerIndex = 0;
+        while (true) {
+            List<String> variants = discoverCorruptedVariants(basePath, "layer" + layerIndex);
+            if (variants.isEmpty()) break;
+            layers.add(variants);
+            layerIndex++;
+        }
+
+        return layers;
+    }
+
+    private List<String> discoverCorruptedVariants(String basePath, String layerName) {
+        List<String> variants = new ArrayList<>();
+        char letter = 'a';
+
+        while (true) {
+            String path = basePath + layerName + letter + "_corrupted.png";
+            if (getClass().getClassLoader().getResource(path) == null) {
+                break;
+            }
+            variants.add(path);
+            letter++;
+        }
+
+        return variants;
+    }
+    
+    private List<String> discoverOverlayFrames(int stageIndex) {
+        List<String> frames = new ArrayList<>();
+        String basePath = "resources/images/backgrounds/stage" + stageIndex + "/"; // mesma pasta base dos outros
+        char letter = 'a';
+
+        while (true) {
+            String path = basePath + "overlay" + letter + ".png";
+            if (getClass().getClassLoader().getResource(path) == null) {
+                break;
+            }
+            frames.add(path);
+            letter++;
+        }
+
+        return frames;
+    }
 	
 	public int getIndex() { return index; }
 	public double getStartX() { return startX; }
@@ -113,5 +165,7 @@ public class StageConfig {
     public List<String> getLayout() { return layout; }
     public List<List<String>> getBackgroundLayers() { return backgroundLayers; }
     public double getCameraVerticalOffset() { return cameraVerticalOffset; }
+	public List<List<String>> getCorruptedBackgroundLayers() { return corruptedBackgroundLayers; }
+	public List<String> getOverlayFrames() { return overlayFrames; }
 
 }
