@@ -89,7 +89,7 @@ public class PlayingState implements GameState {
 	    	}
 	    }
 		//levelWidth, levelHeight)
-	    camera.follow(player, 2000, GameConfig.SCREEN_HEIGHT, campaign.getCurrentStage().getCameraVerticalOffset());
+	    camera.follow(player, levelWidth, GameConfig.SCREEN_HEIGHT, campaign.getCurrentStage().getCameraVerticalOffset());
 	    
 	    elapsedSeconds += GameConfig.FIXED_DELTA;
 	}
