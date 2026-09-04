@@ -15,9 +15,10 @@ public class Camera {
     
     public void follow(Player player, int levelWidth, int levelHeight, double verticalOffset) {
         double idealX = player.getX() - GameConfig.SCREEN_WIDTH / 2.0;
+        double idealY = player.getY() - GameConfig.SCREEN_HEIGHT / 2.0 - verticalOffset;
         
         x = clamp(idealX, 0, levelWidth - GameConfig.SCREEN_WIDTH);
-        y = verticalOffset;
+        y = clamp(idealY, 0, levelHeight - GameConfig.SCREEN_HEIGHT);
     }
     
   

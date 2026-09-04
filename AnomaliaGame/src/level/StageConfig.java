@@ -18,8 +18,8 @@ public class StageConfig {
 	double startX, startY;
 	Direction anomalyDirection;
 	private List<String> layout;
-	private List<List<String>> backgroundLayers;
-	private List<List<String>> corruptedBackgroundLayers;
+	private List<String> backgroundLayers;
+	private List<String> corruptedBackgroundLayers;
 	private static final String LEVELS_DIR = "resources/levels/stage";
     private static final String EXT = ".txt";
     private double cameraVerticalOffset;
@@ -33,7 +33,7 @@ public class StageConfig {
 		this.anomalySpeed = anomalySpeed;
 		this.layout = loadLayout(LEVELS_DIR + index + EXT);
 		this.backgroundLayers = discoverBackgroundLayers(index);
-		this.corruptedBackgroundLayers = discoverCorruptedLayers(index);
+		this.corruptedBackgroundLayers = discoverCorruptedLayers(this.backgroundLayers);
 		this.overlayFrames = discoverOverlayFrames(index);
 		
 		if (anomalyDirection == Direction.LEFT_TO_RIGHT || anomalyDirection == Direction.RIGHT_TO_LEFT) {
@@ -52,6 +52,7 @@ public class StageConfig {
 		this.anomalySpeed = anomalySpeed;
 		this.layout = loadLayout(layoutPath);
 		this.backgroundLayers = discoverBackgroundLayers(index);
+		this.corruptedBackgroundLayers = discoverCorruptedLayers(this.backgroundLayers);
 		
 		if (anomalyDirection == Direction.LEFT_TO_RIGHT || anomalyDirection == Direction.RIGHT_TO_LEFT) {
 			this.cameraVerticalOffset = 100;
@@ -78,20 +79,20 @@ public class StageConfig {
 		    return lines;
     }
 	
-	private List<List<String>> discoverBackgroundLayers(int stageIndex) {
-        List<List<String>> layers = new ArrayList<>();
-        String basePath = "resources/images/backgrounds/stage" + stageIndex + "/";
+	private List<String> discoverBackgroundLayers(int stageIndex) {
+	    List<String> layers = new ArrayList<>();
+	    String basePath = "resources/images/backgrounds/stage" + stageIndex + "/";
 
-        int layerIndex = 0;
-        while (true) {
-            List<String> variants = discoverVariants(basePath, "layer" + layerIndex);
-            if (variants.isEmpty()) break;
-            layers.add(variants);
-            layerIndex++;
-        }
+	    int layerIndex = 0;
+	    while (true) {
+	        String path = basePath + "layer" + layerIndex + ".png";
+	        if (getClass().getClassLoader().getResource(path) == null) break;
+	        layers.add(path);
+	        layerIndex++;
+	    }
 
-        return layers;
-    }
+	    return layers;
+	}
 
     private List<String> discoverVariants(String basePath, String layerName) {
         List<String> variants = new ArrayList<>();
@@ -109,21 +110,18 @@ public class StageConfig {
         return variants;
     }
     
-    private List<List<String>> discoverCorruptedLayers(int stageIndex) {
-        List<List<String>> layers = new ArrayList<>();
-        String basePath = "resources/images/backgrounds/stage" + stageIndex + "/";
-
-        int layerIndex = 0;
-        while (true) {
-            List<String> variants = discoverCorruptedVariants(basePath, "layer" + layerIndex);
-            if (variants.isEmpty()) break;
-            layers.add(variants);
-            layerIndex++;
+    private List<String> discoverCorruptedLayers(List<String> normalLayers) {
+        List<String> corrupted = new ArrayList<>();
+        for (String normalPath : normalLayers) {
+            String corruptedPath = normalPath.replace(".png", "_corrupted.png");
+            if (getClass().getClassLoader().getResource(corruptedPath) != null) {
+                corrupted.add(corruptedPath);
+            } else {
+                corrupted.add(null);
+            }
         }
-
-        return layers;
+        return corrupted;
     }
-
     private List<String> discoverCorruptedVariants(String basePath, String layerName) {
         List<String> variants = new ArrayList<>();
         char letter = 'a';
@@ -163,9 +161,9 @@ public class StageConfig {
     public Direction getAnomalyDirection() { return anomalyDirection; }
     public double getAnomalySpeed() { return anomalySpeed; }
     public List<String> getLayout() { return layout; }
-    public List<List<String>> getBackgroundLayers() { return backgroundLayers; }
+    public List<String> getBackgroundLayers() { return backgroundLayers; }
     public double getCameraVerticalOffset() { return cameraVerticalOffset; }
-	public List<List<String>> getCorruptedBackgroundLayers() { return corruptedBackgroundLayers; }
+	public List<String> getCorruptedBackgroundLayers() { return corruptedBackgroundLayers; }
 	public List<String> getOverlayFrames() { return overlayFrames; }
 
 }

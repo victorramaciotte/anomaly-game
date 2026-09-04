@@ -89,7 +89,7 @@ public class PlayingState implements GameState {
 	    	}
 	    }
 		//levelWidth, levelHeight)
-	    camera.follow(player, levelWidth, GameConfig.SCREEN_HEIGHT, campaign.getCurrentStage().getCameraVerticalOffset());
+	    camera.follow(player, levelWidth, levelHeight, campaign.getCurrentStage().getCameraVerticalOffset());
 	    
 	    elapsedSeconds += GameConfig.FIXED_DELTA;
 	}
@@ -196,25 +196,22 @@ public class PlayingState implements GameState {
 	    levelHeight = levelData.getLevelHeight();
 	    background = new ArrayList<>();
 	    
-	    List<List<String>> layerPaths = config.getBackgroundLayers();
-	    List<List<String>> corruptedPaths = config.getCorruptedBackgroundLayers();
+	    
+	    List<String> layerPaths = config.getBackgroundLayers();
+	    List<String> corruptedPaths = config.getCorruptedBackgroundLayers();
 	    double[] scrollFactors = {0.1, 0.3, 0.5, 0.8}; // fatores padrão, do mais distante pro mais próximo
+	    
+	    Background.Orientation orientation = (config.getAnomalyDirection() == Direction.LEFT_TO_RIGHT
+	            || config.getAnomalyDirection() == Direction.RIGHT_TO_LEFT)
+	            ? Background.Orientation.HORIZONTAL
+	            : Background.Orientation.VERTICAL;
 
 	    for (int i = 0; i < layerPaths.size(); i++) {
-	        List<BufferedImage> variants = new ArrayList<>();
-	        for (String path : layerPaths.get(i)) {
-	            variants.add(loadImage(path));
-	        }
-	        
-	        List<BufferedImage> corruptedVariants = new ArrayList<>();
-	        if (i < corruptedPaths.size()) {
-	            for (String path : corruptedPaths.get(i)) {
-	                corruptedVariants.add(loadImage(path));
-	            }
-	        }
-	        
+	        BufferedImage normalImg = loadImage(layerPaths.get(i));
+	        BufferedImage corruptedImg = (corruptedPaths.get(i) != null) ? loadImage(corruptedPaths.get(i)) : null;
 	        double factor = (i < scrollFactors.length) ? scrollFactors[i] : 1.0;
-	        background.add(new Background(variants, corruptedVariants, scrollFactors[i]));
+
+	        background.add(new Background(normalImg, corruptedImg, factor, orientation));
 	    }
 	    
 	    List<BufferedImage> overlayImages = new ArrayList<>();

@@ -21,6 +21,10 @@ public class CorruptionOverlay {
     }
 
     public void update() {
+    	if (frames == null || frames.isEmpty()) {
+            return;
+        }
+
         tickCounter++;
         if (tickCounter >= ticksPerFrame) {
             tickCounter = 0;
@@ -29,6 +33,10 @@ public class CorruptionOverlay {
     }
 
     public void render(Graphics g, Camera camera, Rectangle2D affectedArea) {
+    	if (frames == null || frames.isEmpty()) {
+            return;
+        }
+    	
         Graphics2D g2d = (Graphics2D) g;
         BufferedImage frame = frames.get(currentFrame);
 

@@ -5,114 +5,76 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 public class Background {
 
-    private List<BufferedImage> variants;
-    private List<BufferedImage> corruptedVariants;
-    private double scrollFactor;
+    public enum Orientation { HORIZONTAL, VERTICAL }
 
-    public Background(List<BufferedImage> variants, List<BufferedImage> corruptedVariants, double scrollFactor) {
-        this.variants = variants;
-        this.corruptedVariants = corruptedVariants;
+    private BufferedImage image;
+    private BufferedImage corruptedImage;
+    private double scrollFactor;
+    private Orientation orientation;
+
+    public Background(BufferedImage image, BufferedImage corruptedImage, double scrollFactor, Orientation orientation) {
+        this.image = image;
+        this.corruptedImage = corruptedImage;
         this.scrollFactor = scrollFactor;
+        this.orientation = orientation;
     }
 
     public void render(Graphics g, Camera camera, Rectangle2D affectedArea) {
         Graphics2D g2d = (Graphics2D) g;
 
-        int offsetX = (int) (camera.getX() * scrollFactor);
-        int imgWidth = variants.get(0).getWidth();
-        int imgHeight = variants.get(0).getHeight();
-        int y = GameConfig.SCREEN_HEIGHT - imgHeight;
-
-        int firstTileWorldX = Math.floorDiv(offsetX, imgWidth) * imgWidth - imgWidth;
-
-        for (int worldX = firstTileWorldX; worldX < offsetX + GameConfig.SCREEN_WIDTH + imgWidth; worldX += imgWidth) {
-            int tileIndex = Math.floorDiv(worldX, imgWidth);
-            int screenX = worldX - offsetX;
-
-            BufferedImage normal = variants.get(Math.floorMod(tileIndex, variants.size()));
-
-            if (corruptedVariants.isEmpty()) {
-                g2d.drawImage(normal, screenX - 2, y, imgWidth + 2, imgHeight, null);
-                continue;
-            }
-
-            double realWorldX = screenX + camera.getX();
-            Rectangle2D tileWorldBounds = new Rectangle2D.Double(realWorldX, 0, imgWidth, GameConfig.SCREEN_HEIGHT);
-            Rectangle2D intersection = tileWorldBounds.createIntersection(affectedArea);
-
-            if (intersection.isEmpty()) {
-                g2d.drawImage(normal, screenX - 2, y, imgWidth + 2, imgHeight, null);
-                continue;
-            }
-
-            BufferedImage corrupted = corruptedVariants.get(Math.floorMod(tileIndex, corruptedVariants.size()));
-
-            int corruptX = (int) (intersection.getX() - realWorldX) + screenX;
-            int corruptY = (int) intersection.getY();
-            int corruptW = (int) intersection.getWidth();
-            int corruptH = (int) intersection.getHeight();
-
-            Rectangle2D tileScreenBounds = new Rectangle2D.Double(screenX, y, imgWidth, imgHeight);
-            Rectangle2D corruptScreenBounds = new Rectangle2D.Double(corruptX, corruptY, corruptW, corruptH);
-            Rectangle2D visibleCorruption = tileScreenBounds.createIntersection(corruptScreenBounds);
-
-            if (visibleCorruption.isEmpty()) {
-                g2d.drawImage(normal, screenX - 2, y, imgWidth + 2, imgHeight, null);
-                continue;
-            }
-
-            drawNormalOutsideCorruption(g2d, normal, screenX, y, imgWidth, imgHeight, visibleCorruption);
-            drawImageClipped(g2d, corrupted, screenX, y, imgWidth, imgHeight, visibleCorruption);
+        int x, y;
+        if (orientation == Orientation.HORIZONTAL) {
+            x = -(int) (camera.getX() * scrollFactor);
+            y = -(int) (camera.getY() * scrollFactor);
+        } else {
+            x = -(int) (camera.getX() * scrollFactor);
+            y = -(int) (camera.getY() * scrollFactor);
         }
-    }
 
-    private void drawNormalOutsideCorruption(
-            Graphics2D g2d,
-            BufferedImage image,
-            int x,
-            int y,
-            int width,
-            int height,
-            Rectangle2D corruption
-    ) {
-        double cx = corruption.getX();
-        double cy = corruption.getY();
-        double cw = corruption.getWidth();
-        double ch = corruption.getHeight();
-
-        drawImageClipped(g2d, image, x, y, width, height, new Rectangle2D.Double(x, y, width, cy - y));
-        drawImageClipped(g2d, image, x, y, width, height, new Rectangle2D.Double(x, cy + ch, width, y + height - (cy + ch)));
-        drawImageClipped(g2d, image, x, y, width, height, new Rectangle2D.Double(x, cy, cx - x, ch));
-        drawImageClipped(g2d, image, x, y, width, height, new Rectangle2D.Double(cx + cw, cy, x + width - (cx + cw), ch));
-    }
-
-    private void drawImageClipped(
-            Graphics2D g2d,
-            BufferedImage image,
-            int x,
-            int y,
-            int width,
-            int height,
-            Rectangle2D clip
-    ) {
-        if (clip.getWidth() <= 0 || clip.getHeight() <= 0) {
+        if (corruptedImage == null) {
+            g2d.drawImage(image, x, y, null);
             return;
         }
 
+        // posição real do mundo por trás dessa imagem (usa a câmera real, não a escala de parallax)
+        double realWorldX = x + camera.getX();
+        double realWorldY = y + camera.getY();
+        Rectangle2D imageWorldBounds = new Rectangle2D.Double(realWorldX, realWorldY, image.getWidth(), image.getHeight());
+        Rectangle2D intersection = imageWorldBounds.createIntersection(affectedArea);
+
+        if (intersection.isEmpty()) {
+            g2d.drawImage(image, x, y, null);
+            return;
+        }
+
+        // converte a interseção de volta pra coordenada de tela
+        double corruptScreenX = intersection.getX() - realWorldX + x;
+        double corruptScreenY = intersection.getY() - realWorldY + y;
+        Rectangle2D corruption = new Rectangle2D.Double(corruptScreenX, corruptScreenY, intersection.getWidth(), intersection.getHeight());
+
+        drawNormalOutsideCorruption(g2d, image, x, y, corruption);
+        drawImageClipped(g2d, corruptedImage, x, y, corruption);
+    }
+
+    private void drawNormalOutsideCorruption(Graphics2D g2d, BufferedImage img, int x, int y, Rectangle2D c) {
+        double cx = c.getX(), cy = c.getY(), cw = c.getWidth(), ch = c.getHeight();
+        int w = img.getWidth(), h = img.getHeight();
+
+        drawImageClipped(g2d, img, x, y, new Rectangle2D.Double(x, y, w, cy - y));
+        drawImageClipped(g2d, img, x, y, new Rectangle2D.Double(x, cy + ch, w, y + h - (cy + ch)));
+        drawImageClipped(g2d, img, x, y, new Rectangle2D.Double(x, cy, cx - x, ch));
+        drawImageClipped(g2d, img, x, y, new Rectangle2D.Double(cx + cw, cy, x + w - (cx + cw), ch));
+    }
+
+    private void drawImageClipped(Graphics2D g2d, BufferedImage img, int x, int y, Rectangle2D clip) {
+        if (clip.getWidth() <= 0 || clip.getHeight() <= 0) return;
+
         Shape originalClip = g2d.getClip();
-
-        g2d.setClip(
-                (int) clip.getX(),
-                (int) clip.getY(),
-                (int) Math.ceil(clip.getWidth()),
-                (int) Math.ceil(clip.getHeight())
-        );
-
-        g2d.drawImage(image, x - 2, y, width + 2, height, null);
+        g2d.setClip((int) clip.getX(), (int) clip.getY(), (int) Math.ceil(clip.getWidth()), (int) Math.ceil(clip.getHeight()));
+        g2d.drawImage(img, x, y, null);
         g2d.setClip(originalClip);
     }
 }
