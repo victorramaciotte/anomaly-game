@@ -1,5 +1,6 @@
 package level;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import entity.Block;
 import entity.BlockState;
 import entity.BlockType;
 import main.GameConfig;
+import main.ImageLoader;
 
 public class LevelBuilder {
     static int tile = GameConfig.TILE_SIZE;
@@ -35,7 +37,7 @@ public class LevelBuilder {
                     continue; // não vira Block
                 }
 
-                Block block = parseChar(c, x, y);
+                Block block = parseChar(c, x, y, config.getIndex());
                 if (block != null) blocks.add(block);
             }
         }
@@ -46,16 +48,45 @@ public class LevelBuilder {
         return new LevelData(blocks, coreX, coreY, levelHeight, levelWidth);
     }
 
-    private static Block parseChar(char c, double x, double y) {
-        switch (c) {
-            case '#': return new Block(x, y, BlockType.INVISIBLE, BlockState.NORMAL);
-            case 'F': return new Block(x, y, BlockType.FILL, BlockState.NORMAL);
-            case 'N': return new Block(x, y, BlockType.NORMAL, BlockState.NORMAL);
-            case 'B': return new Block(x, y, BlockType.BREAKABLE, BlockState.NORMAL);
-            case 'b': return new Block(x, y, BlockType.BREAKABLE, BlockState.CRACKED);
-            case '.': return null; // vazio
-            default:
-                throw new IllegalStateException("Caractere desconhecido no layout: '" + c + "'");
+    private static Block parseChar(char c, double x, double y, int stageIndex) {
+        return switch (c) {
+            case '#' -> new Block(x, y, BlockType.INVISIBLE, BlockState.NORMAL, stageIndex);
+            case 'F' -> new Block(x, y, BlockType.FILL, BlockState.NORMAL, stageIndex);
+            case 'N' -> new Block(x, y, BlockType.NORMAL,  BlockState.NORMAL,stageIndex);
+            case 'n' -> new Block(x, y, BlockType.NORMAL,  BlockState.NORMAL,stageIndex, 1);
+            case 'M' -> new Block(x, y, BlockType.NORMAL,  BlockState.NORMAL,stageIndex, 2);
+            case 'B' -> new Block(x, y, BlockType.BREAKABLE, BlockState.NORMAL, stageIndex);
+            case 'b' -> new Block(x, y, BlockType.BREAKABLE, BlockState.CRACKED, stageIndex);
+            case '.' -> null;
+            default -> throw new IllegalStateException("Caractere desconhecido: '" + c + "'");
+        };
+    }
+    
+    public static BufferedImage resolveSprite(int stageIndex, BlockType type, BlockState state, int variant) {
+        String key = spriteKeyFor(type, state, variant);
+        if (key == null) return null;
+        return ImageLoader.load("resources/images/blocks/stage" + stageIndex + "/" + key + ".png");
+    }
+
+    private static String spriteKeyFor(BlockType type, BlockState state, int variant) {
+    	String suffix = (variant > 0) ? "_v" + variant : "";
+    	
+    	if (state == BlockState.CORRUPTED) {
+    		String base = switch (type) {
+            case BREAKABLE -> "breakable";
+            case FILL -> "fill";
+            default -> "normal";
+        };
+        return base + "_corrupted" + suffix;
         }
+        if (type == BlockType.BREAKABLE && state == BlockState.CRACKED) {
+            return "breakable_cracked" + suffix;
+        }
+        return switch (type) {
+            case NORMAL -> "normal" + suffix;
+            case BREAKABLE -> "breakable" + suffix;
+            case FILL -> "fill" + suffix;
+            default -> null;
+        };
     }
 }

@@ -30,6 +30,7 @@ import main.Background;
 import main.Camera;
 import main.CorruptionOverlay;
 import main.GameConfig;
+import main.ImageLoader;
 
 public class PlayingState implements GameState {
 	
@@ -207,8 +208,8 @@ public class PlayingState implements GameState {
 	            : Background.Orientation.VERTICAL;
 
 	    for (int i = 0; i < layerPaths.size(); i++) {
-	        BufferedImage normalImg = loadImage(layerPaths.get(i));
-	        BufferedImage corruptedImg = (corruptedPaths.get(i) != null) ? loadImage(corruptedPaths.get(i)) : null;
+	        BufferedImage normalImg = ImageLoader.load(layerPaths.get(i));
+	        BufferedImage corruptedImg = (corruptedPaths.get(i) != null) ? ImageLoader.load(corruptedPaths.get(i)) : null;
 	        double factor = (i < scrollFactors.length) ? scrollFactors[i] : 1.0;
 
 	        background.add(new Background(normalImg, corruptedImg, factor, orientation));
@@ -216,7 +217,7 @@ public class PlayingState implements GameState {
 	    
 	    List<BufferedImage> overlayImages = new ArrayList<>();
 	    for (String path : config.getOverlayFrames()) {
-	        overlayImages.add(loadImage(path));
+	        overlayImages.add(ImageLoader.load(path));
 	    }
 	    corruptionOverlay = new CorruptionOverlay(overlayImages, 20); // 20 ticks por frame, ajuste ao gosto
 	    

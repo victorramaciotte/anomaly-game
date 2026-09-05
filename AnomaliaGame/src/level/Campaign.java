@@ -2,6 +2,8 @@ package level;
 
 import java.util.List;
 
+import main.ImageLoader;
+
 public class Campaign {
     private List<StageConfig> stages;
     private int currentIndex = 0;
@@ -28,5 +30,19 @@ public class Campaign {
 
     public void advance() {
         if (hasNextStage()) currentIndex++;
+    }
+    
+    public void preloadAllImages() {
+        for (StageConfig stage : stages) {
+            for (String path : stage.getBackgroundLayers()) {
+                ImageLoader.load(path);
+            }
+            for (String path : stage.getCorruptedBackgroundLayers()) {
+                if (path != null) ImageLoader.load(path);
+            }
+            for (String path : stage.getOverlayFrames()) {
+                ImageLoader.load(path);
+            }
+        }
     }
 }
