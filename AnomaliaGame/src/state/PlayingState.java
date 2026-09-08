@@ -60,12 +60,17 @@ public class PlayingState implements GameState {
 
 	@Override
 	public void update() {
-		player.updateX();
-	    collision.resolveX(player, blocks);
-
-	    player.updateY();
-	    collision.resolveY(player, blocks);
-	    
+		
+		if (player.isDying()) {
+		    player.tickDeath();
+		} else {
+		    player.updateX();
+		    collision.resolveX(player, blocks);
+		    player.updateY();
+		    collision.resolveY(player, blocks);
+		    
+		}
+		player.updateAnimation();
 	    anomaly.update();
 	    collision.checkAnomalyDamage(player, anomaly);
 	    collision.affectBlocks(blocks, anomaly);
@@ -73,6 +78,7 @@ public class PlayingState implements GameState {
 	    corruptionOverlay.update();
 	    
 	    checkVoidDeath();
+	    if (player.isDying()) return;
 	    if(player.isDead()) {
 	    	stateManager.showGameOver(false);
 	    }
@@ -184,9 +190,11 @@ public class PlayingState implements GameState {
 
 	private void checkVoidDeath() {
 		if (player.getY() > levelHeight + GameConfig.VOID_MARGIN) {
-			if (player.takeLife()) {
+			if (player.isDead()) {
 	            stateManager.showGameOver(false);
 	        }
+			
+			player.finishDeath();
 		}
 		
 	}

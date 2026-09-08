@@ -28,6 +28,7 @@ public class CollisionSystem {
 				landedThisTick = true;
 				
 				if (block.getState() == BlockState.CORRUPTED || block.getState() == BlockState.CRACKED) {
+					if (p.isDying()) return;
 					p.takeDamage(GameConfig.ANOMALY_DAMAGE_PER_SECOND);
 				}
 
@@ -65,9 +66,10 @@ public class CollisionSystem {
 	}
 	
 	public void checkAnomalyDamage(Player p, Anomaly anomaly) {
+		if (p.isDying()) return;
 	    if (p.getBounds().intersects(anomaly.getAffectedArea())) {
 	        boolean fatal = p.takeDamage(GameConfig.ANOMALY_LIGHT_DAMAGE);
-	        if(fatal) p.takeLife();
+	        if(fatal) p.startDeath();
 	    }
 	}
 	
