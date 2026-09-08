@@ -56,32 +56,43 @@ public class LevelBuilder {
             case 'n' -> new Block(x, y, BlockType.NORMAL,  BlockState.NORMAL,stageIndex, 1);
             case 'M' -> new Block(x, y, BlockType.NORMAL,  BlockState.NORMAL,stageIndex, 2);
             case 'B' -> new Block(x, y, BlockType.BREAKABLE, BlockState.NORMAL, stageIndex);
-            case 'b' -> new Block(x, y, BlockType.BREAKABLE, BlockState.CRACKED, stageIndex);
+            case 'b' -> new Block(x, y, BlockType.BREAKABLE, BlockState.NORMAL, stageIndex, 1);
+            case 'r' -> new Block(x, y, BlockType.BREAKABLE, BlockState.NORMAL, stageIndex, 2);
+            case 'D' -> new Block(x, y, BlockType.BREAKABLE, BlockState.CRACKED, stageIndex);
+            case 'd' -> new Block(x, y, BlockType.BREAKABLE, BlockState.CRACKED, stageIndex, 1);
+            case 'k' -> new Block(x, y, BlockType.BREAKABLE, BlockState.CRACKED, stageIndex, 2);
             case '.' -> null;
             default -> throw new IllegalStateException("Caractere desconhecido: '" + c + "'");
         };
     }
     
-    public static BufferedImage resolveSprite(int stageIndex, BlockType type, BlockState state, int variant) {
-        String key = spriteKeyFor(type, state, variant);
+    public static BufferedImage resolveSprite(int stageIndex, BlockType type, BlockState state, int variant, BlockState previousState) {
+        String key = spriteKeyFor(type, state, variant, previousState);
         if (key == null) return null;
         return ImageLoader.load("resources/images/blocks/stage" + stageIndex + "/" + key + ".png");
     }
 
-    private static String spriteKeyFor(BlockType type, BlockState state, int variant) {
-    	String suffix = (variant > 0) ? "_v" + variant : "";
-    	
-    	if (state == BlockState.CORRUPTED) {
-    		String base = switch (type) {
-            case BREAKABLE -> "breakable";
-            case FILL -> "fill";
-            default -> "normal";
-        };
-        return base + "_corrupted" + suffix;
+    private static String spriteKeyFor(BlockType type, BlockState state, int variant, BlockState previousState) {
+        if (type == BlockType.INVISIBLE || state == BlockState.DESTROID) {
+            return null;
         }
-        if (type == BlockType.BREAKABLE && state == BlockState.CRACKED) {
-            return "breakable_cracked" + suffix;
+
+        String suffix = (variant > 0) ? "_v" + variant : "";
+        
+        if (state == BlockState.CRACKED) {
+            String base = (previousState == BlockState.CORRUPTED) ? "breakable_cracked_corrupted" : "breakable_cracked";
+            return base + suffix;
         }
+
+        if (state == BlockState.CORRUPTED) {
+            String base = switch (type) {
+                case BREAKABLE -> "breakable";
+                case FILL -> "fill";
+                default -> "normal";
+            };
+            return base + "_corrupted" + suffix;
+        }
+        
         return switch (type) {
             case NORMAL -> "normal" + suffix;
             case BREAKABLE -> "breakable" + suffix;

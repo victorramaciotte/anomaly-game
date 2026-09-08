@@ -16,6 +16,7 @@ public class Block extends Entity {
 	private BufferedImage currentSprite;
 	private int stageIndex;
 	private int spriteVariant;
+	private BlockState previousState;
 	
 	public Block(double x, double y, BlockType type, BlockState state, int stageIndex, int spriteVariant) {
 		super(x, y, GameConfig.TILE_SIZE, GameConfig.TILE_SIZE);
@@ -36,7 +37,7 @@ public class Block extends Entity {
 	}
 	
 	private void refreshSprite() {
-	    currentSprite = LevelBuilder.resolveSprite(stageIndex, type, state, spriteVariant);
+	    currentSprite = LevelBuilder.resolveSprite(stageIndex, type, state, spriteVariant, previousState);
 	}
 	
 	public void setVisible(boolean visible) { this.visible = visible; }
@@ -67,9 +68,16 @@ public class Block extends Entity {
 	}
 	
 	public void corrupt() {
-		if (state != BlockState.NORMAL) return;
-		state = BlockState.CORRUPTED;
-		refreshSprite();
+	    if (state == BlockState.NORMAL) {
+	        state = BlockState.CORRUPTED;
+	        previousState = BlockState.CORRUPTED;
+	        refreshSprite();
+	        return;
+	    }
+	    if (state == BlockState.CRACKED && previousState != BlockState.CORRUPTED) {
+	        previousState = BlockState.CORRUPTED; // marca visualmente, sem mudar o state funcional
+	        refreshSprite();
+	    }
 	}
 	
 	public void crack() {
