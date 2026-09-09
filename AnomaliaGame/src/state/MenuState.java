@@ -64,12 +64,8 @@ public class MenuState implements GameState {
 
 	@Override
 	public void onKeyPressed(int keyCode) {
-		Campaign campaign = Stages.createDefaultCampaign();
-		long start = System.currentTimeMillis();
-		campaign.preloadAllImages();
-		System.out.println("Pré-carregamento total: " + (System.currentTimeMillis() - start) + "ms");
-	    stateManager.setState(new PlayingState(campaign, stateManager));
-		
+	    Campaign campaign = Stages.createDefaultCampaign();
+	    stateManager.setState(new LoadingState(stateManager, campaign));
 	}
 
 	@Override

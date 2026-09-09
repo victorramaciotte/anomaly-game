@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ImageLoader {
-    private static final Map<String, BufferedImage> cache = new HashMap<>();
+	private static final Map<String, BufferedImage> cache = new ConcurrentHashMap<>();
 
     public static BufferedImage load(String path) {
         return cache.computeIfAbsent(path, ImageLoader::readImage);
