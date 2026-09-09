@@ -201,7 +201,7 @@ public class PlayingState implements GameState {
 	    String levelNumStr = String.valueOf(campaign.getCurrentStageNumber());
 	    // Substitua pelo nome/informação real da sua fase se houver no seu StageConfig:
 	    String levelTitle = campaign.getCurrentStage().getLevelTitle(); 
-	    String levelInfoStr = campaign.getCurrentStageNumber() + " de " + campaign.getTotalStages() + " núcleos contidos"; 
+	    String levelInfoStr = campaign.getCurrentStageNumber() - 1 + " de " + campaign.getTotalStages() + " núcleos contidos"; 
 
 	    FontMetrics numMetrics = g.getFontMetrics(fontLevelNum);
 	    
