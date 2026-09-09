@@ -64,11 +64,14 @@ public class PlayingState implements GameState {
 		if (player.isDying()) {
 		    player.tickDeath();
 		} else {
+			
+			if (player.isHurt()) {
+	            player.tickHurt();
+	        }
 		    player.updateX();
 		    collision.resolveX(player, blocks);
 		    player.updateY();
 		    collision.resolveY(player, blocks);
-		    
 		}
 		player.updateAnimation();
 	    anomaly.update();
@@ -111,16 +114,16 @@ public class PlayingState implements GameState {
 		int camY = (int)camera.getY();
 		g.translate(-camX, -camY);
 		
-		anomaly.render(g);
+		for (Block block : blocks) {
+	        block.render(g);
+	    }
 		
 		player.render(g);
 		
 		core.render(g);
 		
-		for (Block block : blocks) {
-	        block.render(g);
-	    }
 		
+		anomaly.render(g);
 		
 		g.translate(camX, camY);
 		corruptionOverlay.render(g, camera, anomaly.getAffectedArea());
