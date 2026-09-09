@@ -10,7 +10,7 @@ import main.ImageLoader;
 public class Core extends Entity {
 	
 	boolean triggered = false;
-	private BufferedImage coreSprite = ImageLoader.load("resources/images/core/core.png");
+	private BufferedImage coreSprite = ImageLoader.load("images/core/core.png");
 
 	protected Core(double x, double y, double width, double height) {
 		super(x, y, width, height);

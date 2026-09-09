@@ -11,9 +11,9 @@ public final class GameConfig {
     public static final int TILE_SIZE = 64;
     public static final double FIXED_DELTA = 1.0 / FPS;
 
-    public static final double PLAYER_WIDTH = 34;
-    public static final double PLAYER_HEIGHT = 64;
-    public static final double MOVE_SPEED = 2.0;
+    public static final double PLAYER_WIDTH = 51;
+    public static final double PLAYER_HEIGHT = 96;
+    public static final double MOVE_SPEED = 2.5;
     public static final double ANOMALY_BASE_SPEED = 0.1;// px por tick
     public static final double JUMP_FORCE = -6.0;   // px por tick
     public static final double GRAVITY = 0.15;         // px por tick²
@@ -21,10 +21,10 @@ public final class GameConfig {
 
     public static final double MAX_HP = 100;
     public static final int STARTING_LIVES = 5;
-    public static final double ANOMALY_DAMAGE_PER_SECOND = 1.5/UPS;
-    public static final double ANOMALY_LIGHT_DAMAGE = 0.2/UPS;
+    public static final double ANOMALY_DAMAGE_PER_SECOND = 5.0/UPS;
+    public static final double ANOMALY_LIGHT_DAMAGE = 1.0/UPS;
 
-    public static final double FALL_DAMAGE_MIN_HEIGHT = 210;
+    public static final double FALL_DAMAGE_MIN_HEIGHT = 280;
     public static final double FALL_DAMAGE_AMOUNT = 25;
 
     public static final double VOID_MARGIN = 100;

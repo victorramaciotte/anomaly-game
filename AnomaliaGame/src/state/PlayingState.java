@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -49,6 +51,14 @@ public class PlayingState implements GameState {
 	int levelHeight, levelWidth;
 	private List<Background> background;
 	private CorruptionOverlay corruptionOverlay;
+	private BufferedImage levelBadge;      
+	private BufferedImage hpFrame;         
+	private BufferedImage lifeIcon;        
+	
+	private final Font fontTime = new Font("SansSerif", Font.BOLD, 16);
+	private final Font fontLevelNum = new Font("SansSerif", Font.BOLD, 24);
+	private final Font fontLevelInfo = new Font("SansSerif", Font.PLAIN, 14);
+	private final Font fontLevelTitle = new Font("SansSerif", Font.BOLD, 14);
 	
 	public PlayingState(Campaign campaign, GameStateManager stateManager) {
 	    this.campaign = campaign;
@@ -106,6 +116,7 @@ public class PlayingState implements GameState {
 	
 	@Override
 	public void render(Graphics g) {
+	    
 		for (Background layer : background) {
 	        layer.render(g, camera, anomaly.getAffectedArea());
 	    }
@@ -138,21 +149,34 @@ public class PlayingState implements GameState {
 		
 	}
 	
+	public void loadHudAssets() {
+	    levelBadge = ImageLoader.load("images/ui/level_bg.png");
+	    hpFrame = ImageLoader.load("images/ui/life_frame.png");
+	    lifeIcon = ImageLoader.load("images/ui/life.png");
+	}
+	
 	private void renderHUD(Graphics g) {
-		FontMetrics metrics = g.getFontMetrics(new Font("SansSerif", Font.BOLD, 16));
-		
-		g.setFont(new Font("SansSerif", Font.BOLD, 16));
-		g.setColor(Color.WHITE);
-		int width = metrics.stringWidth("Nível: " + campaign.getCurrentStageNumber() + "/" + campaign.getTotalStages());
-        g.drawString("Nível: " + campaign.getCurrentStageNumber() + "/" + campaign.getTotalStages(), GameConfig.SCREEN_WIDTH - width - margin, margin + metrics.getAscent());
-        
-        
-        width = metrics.stringWidth("Tempo: " + formatTime(elapsedSeconds));
-        g.drawString("Tempo: " + formatTime(elapsedSeconds), (GameConfig.SCREEN_WIDTH - width)/2, margin + metrics.getAscent());
-        
-        renderLives(g);
-        renderHpBar(g);
-		
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+	    // 2. Remove serrilhado de textos e formas geométricas
+	    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		loadHudAssets();
+	    renderTime(g);
+	    renderLevelInfo(g);
+	    renderHpAndLives(g);
+	}
+	
+	private void renderTime(Graphics g) {
+	    g.setFont(fontTime);
+	    g.setColor(Color.WHITE);
+	    FontMetrics metrics = g.getFontMetrics(fontTime);
+	    
+	    String timeText = "Tempo: " + formatTime(elapsedSeconds);
+	    int width = metrics.stringWidth(timeText);
+	    
+	    g.drawString(timeText, (GameConfig.SCREEN_WIDTH - width) / 2, margin + metrics.getAscent());
 	}
 	
 	private String formatTime(double seconds) {
@@ -160,36 +184,102 @@ public class PlayingState implements GameState {
         return String.format("%02d:%02d", total / 60, total % 60);
     }
 	
-	private void renderLives(Graphics g) {
-		int diameter = 16;
-	    int spacing = 24; // espaço entre uma bolinha e a próxima
-	    int startX = 20;
-	    int y = margin + spacing;
+	private void renderLevelInfo(Graphics g) {
+	    if (levelBadge == null) return;
 
-	    for (int i = 0; i < player.getLives(); i++) {
-	        g.setColor(Color.RED);
-	        g.fillOval(startX + i * spacing, y, diameter, diameter);
-	    }
+	    // Posiciona o fundo da fase no canto superior direito
+	    int bgX = GameConfig.SCREEN_WIDTH - (int) (levelBadge.getWidth() * 0.6);
+	    int bgY = margin;
+	    
+	    int drawWidth = (int) (levelBadge.getWidth() * 0.6);
+        int drawHeight = (int) (levelBadge.getHeight() * 0.6);
+
+	    // 1. Desenha a imagem de fundo da informação da fase
+	    g.drawImage(levelBadge, bgX, bgY, drawWidth, drawHeight, null);
+
+	    // 2. Textos do nível
+	    String levelNumStr = String.valueOf(campaign.getCurrentStageNumber());
+	    // Substitua pelo nome/informação real da sua fase se houver no seu StageConfig:
+	    String levelTitle = campaign.getCurrentStage().getLevelTitle(); 
+	    String levelInfoStr = campaign.getCurrentStageNumber() + " de " + campaign.getTotalStages() + " núcleos contidos"; 
+
+	    FontMetrics numMetrics = g.getFontMetrics(fontLevelNum);
+	    
+	    // Alinhamento vertical e margem interna (padding) no PNG
+	    int paddingX = 16;
+	    int textY = bgY + (int) (drawHeight / 2) + (numMetrics.getAscent() / 3);
+
+	    // Número do Nível (Em PRETO)
+	    g.setFont(fontLevelNum);
+	    g.setColor(Color.BLACK);
+	    g.drawString(levelNumStr, bgX + paddingX, textY);
+	    
+	    textY = bgY + (int) (drawHeight / 3) + (numMetrics.getAscent() / 3);
+
+	    // Informação/Nome ao lado (Em BRANCO, menor)
+	    int numWidth = numMetrics.stringWidth(levelNumStr);
+	    paddingX *= 5;
+	    g.setFont(fontLevelTitle);
+	    g.setColor(Color.WHITE);
+	    g.drawString(levelTitle, bgX + paddingX + numWidth, textY - 2);
+	    g.setFont(fontLevelInfo);
+	    g.drawString(levelInfoStr, bgX + paddingX + numWidth, textY + 15);
 	}
 	
-	private void renderHpBar(Graphics g) {
-	    int x = margin;
-	    int y = margin;
-	    int width = 200;
-	    int height = 16;
+	private void renderHpAndLives(Graphics g) {
+	    int frameX = margin/2;
+	    int frameY = margin;
 
-	    double hpRatio = player.getHp() / GameConfig.MAX_HP; // valor entre 0.0 e 1.0
-	    int filledWidth = (int) (width * hpRatio);
+	    // =========================================================================
+	    // CONFIGURAÇÃO DOS OFFSETS (Ajuste esses pixels conforme a sua imagem PNG)
+	    // =========================================================================
+	    int hpOffsetX = frameX;      // Distância X onde começa a barra de vida dentro do PNG
+	    int hpOffsetY = frameY - 8;      // Distância Y onde começa a barra de vida dentro do PNG
+	    int maxBarWidth = (int) (hpFrame.getWidth() * 0.5) - 10;   // Largura máxima da área transparente/vazada do HP
+	    int barHeight = (int) (hpFrame.getHeight() * 0.5) - 20;      // Altura da barra de HP
 
+	    int livesOffsetX = 16;   // Posição X onde as vidas começam na imagem
+	    int livesOffsetY = 32;   // Posição Y onde as vidas ficam sobre a imagem
+	    int lifeDiameter = 12;   // Tamanho de cada círculo de vida
+	    int spacing = 20;        // Espaçamento entre as vidas
+	    // =========================================================================
+
+	    // 1. DESENHA A BARRA DE HP (Por BAIXO do PNG)
+	    double hpRatio = player.getHp() / GameConfig.MAX_HP;
+	    int filledWidth = (int) (maxBarWidth * hpRatio);
+
+	    // Fundo escuro (Barra vazia)
 	    g.setColor(Color.DARK_GRAY);
-	    g.fillRect(x, y, width, height); // fundo, representa a barra "vazia"
+	    int arcRadius = 10;
+	    g.fillRoundRect(frameX + hpOffsetX, frameY + hpOffsetY, maxBarWidth, barHeight, arcRadius, arcRadius);
 
-	    g.setColor(Color.GREEN);
-	    g.fillRect(x, y, filledWidth, height); // preenchimento, proporcional ao HP
-
+	    // Preenchimento do HP
 	    g.setColor(Color.WHITE);
-	    g.drawRect(x, y, width, height); // contorno
+	    if(filledWidth < (GameConfig.MAX_HP * 0.4)) { g.setColor(Color.RED); }
+	    g.fillRoundRect(frameX + hpOffsetX, frameY + hpOffsetY, filledWidth, barHeight, arcRadius, arcRadius);
+
+	    // 2. DESENHA A MOLDURA PNG (Por CIMA da barra de HP)
+	    if (hpFrame != null) {
+	    	int drawWidth = (int) (hpFrame.getWidth() * 0.5);
+	        int drawHeight = (int) (hpFrame.getHeight() * 0.5);
+	        
+	        g.drawImage(hpFrame, frameX, frameY, drawWidth, drawHeight, null);
+	    }
+
+	    // 3. DESENHA AS VIDAS (Por CIMA do PNG)
+	    int startX = margin * 2;
+	    int y = (int) (hpFrame.getHeight() * 0.5) - 5; 
+	    
+	    int drawWidth = (int) (lifeIcon.getWidth() * 0.4);
+        int drawHeight = (int) (lifeIcon.getHeight() * 0.4);
+        
+	    for (int i = 0; i < player.getLives(); i++) {
+	        g.drawImage(lifeIcon, startX + i * spacing, y, drawWidth, drawHeight, null);
+	    }
+	    
 	}
+	
+	
 
 	private void checkVoidDeath() {
 		if (player.getY() > levelHeight + GameConfig.VOID_MARGIN) {

@@ -279,12 +279,12 @@ public class Player extends Entity {
 	}
 	
 	public void loadAnimations() {
-	    BufferedImage idleSheet = ImageLoader.load("resources/images/player/player_idle.png");
-	    BufferedImage runSheet = ImageLoader.load("resources/images/player/player_run.png");
-	    BufferedImage jumpSheet = ImageLoader.load("resources/images/player/player_jump.png");
-	    BufferedImage hurtSheet = ImageLoader.load("resources/images/player/player_hurt.png");
-	    BufferedImage fallSheet = ImageLoader.load("resources/images/player/player_fall.png");
-	    BufferedImage deathSheet = ImageLoader.load("resources/images/player/player_death.png");
+	    BufferedImage idleSheet = ImageLoader.load("images/player/player_idle.png");
+	    BufferedImage runSheet = ImageLoader.load("images/player/player_run.png");
+	    BufferedImage jumpSheet = ImageLoader.load("images/player/player_jump.png");
+	    BufferedImage hurtSheet = ImageLoader.load("images/player/player_hurt.png");
+	    BufferedImage fallSheet = ImageLoader.load("images/player/player_fall.png");
+	    BufferedImage deathSheet = ImageLoader.load("images/player/player_death.png");
 
 	    idleAnimation = new Animation(idleSheet, 4, 30);  // ajusta frameCount e velocidade aos seus arquivos reais
 	    runAnimation = new Animation(runSheet, 15, 8);

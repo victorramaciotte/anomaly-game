@@ -20,12 +20,13 @@ public class StageConfig {
 	private List<String> layout;
 	private List<String> backgroundLayers;
 	private List<String> corruptedBackgroundLayers;
-	private static final String LEVELS_DIR = "resources/levels/stage";
+	private static final String LEVELS_DIR = "levels/stage";
     private static final String EXT = ".txt";
     private double cameraVerticalOffset;
     private List<String> overlayFrames;
+    private String levelTitle;
     
-    public StageConfig(int index, double startX, double startY, Direction anomalyDirection, double anomalySpeed) {
+    public StageConfig(int index, double startX, double startY, Direction anomalyDirection, double anomalySpeed, String levelTitle) {
 		this.index = index;
 		this.startX = startX;
 		this.startY = startY;
@@ -35,6 +36,7 @@ public class StageConfig {
 		this.backgroundLayers = discoverBackgroundLayers(index);
 		this.corruptedBackgroundLayers = discoverCorruptedLayers(this.backgroundLayers);
 		this.overlayFrames = discoverOverlayFrames(index);
+		this.levelTitle = levelTitle;
 		
 		if (anomalyDirection == Direction.LEFT_TO_RIGHT || anomalyDirection == Direction.RIGHT_TO_LEFT) {
 			this.cameraVerticalOffset = 100;
@@ -44,7 +46,7 @@ public class StageConfig {
 		}
 	}
 	
-	public StageConfig(int index, double startX, double startY, Direction anomalyDirection, double anomalySpeed, String layoutPath) {
+	public StageConfig(int index, double startX, double startY, Direction anomalyDirection, double anomalySpeed, String levelTitle, String layoutPath) {
 		this.index = index;
 		this.startX = startX;
 		this.startY = startY;
@@ -81,7 +83,7 @@ public class StageConfig {
 	
 	private List<String> discoverBackgroundLayers(int stageIndex) {
 	    List<String> layers = new ArrayList<>();
-	    String basePath = "resources/images/backgrounds/stage" + stageIndex + "/";
+	    String basePath = "images/backgrounds/stage" + stageIndex + "/";
 
 	    int layerIndex = 0;
 	    while (true) {
@@ -140,7 +142,7 @@ public class StageConfig {
     
     private List<String> discoverOverlayFrames(int stageIndex) {
         List<String> frames = new ArrayList<>();
-        String basePath = "resources/images/backgrounds/stage" + stageIndex + "/"; // mesma pasta base dos outros
+        String basePath = "images/backgrounds/stage" + stageIndex + "/"; // mesma pasta base dos outros
         char letter = 'a';
 
         while (true) {
@@ -165,5 +167,6 @@ public class StageConfig {
     public double getCameraVerticalOffset() { return cameraVerticalOffset; }
 	public List<String> getCorruptedBackgroundLayers() { return corruptedBackgroundLayers; }
 	public List<String> getOverlayFrames() { return overlayFrames; }
+	public String getLevelTitle() { return levelTitle; }
 
 }

@@ -69,7 +69,7 @@ public class LevelBuilder {
     public static BufferedImage resolveSprite(int stageIndex, BlockType type, BlockState state, int variant, BlockState previousState) {
         String key = spriteKeyFor(type, state, variant, previousState);
         if (key == null) return null;
-        return ImageLoader.load("resources/images/blocks/stage" + stageIndex + "/" + key + ".png");
+        return ImageLoader.load("images/blocks/stage" + stageIndex + "/" + key + ".png");
     }
 
     private static String spriteKeyFor(BlockType type, BlockState state, int variant, BlockState previousState) {
