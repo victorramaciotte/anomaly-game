@@ -53,7 +53,11 @@ public class PlayingState implements GameState {
 	private CorruptionOverlay corruptionOverlay;
 	private BufferedImage levelBadge;      
 	private BufferedImage hpFrame;         
-	private BufferedImage lifeIcon;        
+	private BufferedImage lifeIcon;    
+	private boolean showingStageComplete = false;
+	private int stageCompleteTicksRemaining;
+	private static final int STAGE_COMPLETE_DURATION = 350; 
+	private BufferedImage stageCompleteImage;
 	
 	private final Font fontTime = new Font("SansSerif", Font.BOLD, 16);
 	private final Font fontLevelNum = new Font("SansSerif", Font.BOLD, 24);
@@ -70,6 +74,14 @@ public class PlayingState implements GameState {
 
 	@Override
 	public void update() {
+		if (showingStageComplete) {
+	        stageCompleteTicksRemaining--;
+	        if (stageCompleteTicksRemaining <= 0) {
+	            showingStageComplete = false;
+	            advanceOrFinish(); // só agora troca de estágio de verdade
+	        }
+	        return; // pula todo o resto do update enquanto o popup está na tela
+	    }
 		
 		if (player.isDying()) {
 		    player.tickDeath();
@@ -99,16 +111,10 @@ public class PlayingState implements GameState {
 	    if (core.onPLayerTouch(player)) {
 	    	anomaly.freeze();
 	    	stageCompleted = true;
-	    	
-	    	if (campaign.hasNextStage()) {
-	            campaign.advance();
-	            loadStage(campaign.getCurrentStage(), player);
-	        }
-	    	else {
-	    		stateManager.setState(new GameOverState(stateManager, true)); //vitória
-	    	}
+	    	showingStageComplete = true;
+	        stageCompleteTicksRemaining = STAGE_COMPLETE_DURATION;
 	    }
-		//levelWidth, levelHeight)
+		
 	    camera.follow(player, levelWidth, levelHeight, campaign.getCurrentStage().getCameraVerticalOffset());
 	    
 	    elapsedSeconds += GameConfig.FIXED_DELTA;
@@ -140,13 +146,20 @@ public class PlayingState implements GameState {
 		corruptionOverlay.render(g, camera, anomaly.getAffectedArea());
 		renderHUD(g);
 		
-	/*	if (isStageComplete()) {
-			g.setFont(new Font("Arial", Font.BOLD, 28));
-	        g.setColor(Color.WHITE);
-	        g.drawString("Estágio concluído!", GameConfig.SCREEN_WIDTH / 2 - 100, GameConfig.SCREEN_HEIGHT / 2);
-	    } */
-		
-		
+		if (showingStageComplete) {
+        int x = (GameConfig.SCREEN_WIDTH - stageCompleteImage.getWidth()) / 2;
+        int y = (GameConfig.SCREEN_HEIGHT - stageCompleteImage.getHeight()) / 2;
+        g.drawImage(stageCompleteImage, x, y, null);
+    }
+	}
+	
+	private void advanceOrFinish() {
+	    if (campaign.hasNextStage()) {
+	        campaign.advance();
+	        loadStage(campaign.getCurrentStage(), player);
+	    } else {
+	        stateManager.setState(new GameOverState(stateManager, true));
+	    }
 	}
 	
 	public void loadHudAssets() {
@@ -297,7 +310,7 @@ public class PlayingState implements GameState {
 	    levelWidth = levelData.getLevelWidth(); 
 	    levelHeight = levelData.getLevelHeight();
 	    background = new ArrayList<>();
-	    
+	    stageCompleteImage = ImageLoader.load("images/ui/stage_complete.png");
 	    
 	    List<String> layerPaths = config.getBackgroundLayers();
 	    List<String> corruptedPaths = config.getCorruptedBackgroundLayers();

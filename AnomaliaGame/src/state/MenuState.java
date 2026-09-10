@@ -4,61 +4,65 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.util.List;
 
 import input.KeyboardInputs;
 import level.Campaign;
 import level.Stages;
 import main.GameConfig;
+import main.ImageLoader;
 
 public class MenuState implements GameState {
 	private GameStateManager stateManager;
 	private boolean blinkVisible = true;
-	private double blinkTimer = 0;
+	private BufferedImage backgroundImage;
+	private BufferedImage vignetteImage;
+	private BufferedImage controlsImage;
+	private BufferedImage warningOverlay;
+	private BufferedImage startMsg;
+
+	//parte que pisca
+	private boolean overlayVisible = true;
+	private int blinkTickCounter = 0;
+	private static final int VISIBLE_DURATION = 90;
+	private static final int HIDDEN_DURATION = 20; 
 
 	public MenuState(GameStateManager stateManager) {
 		this.stateManager = stateManager;
+		backgroundImage = ImageLoader.load("images/ui/start_screen.png");
+	    vignetteImage = ImageLoader.load("images/ui/overlay.png");
+	    controlsImage = ImageLoader.load("images/ui/overlay_controls.png");
+	    warningOverlay = ImageLoader.load("images/ui/warning.png");
+	    startMsg = ImageLoader.load("images/ui/start_msg.png");
 	}
 	
 	@Override
 	public void update() {
-		updateBlink();
+	    blinkTickCounter++;
+
+	    int currentDuration = overlayVisible ? VISIBLE_DURATION : HIDDEN_DURATION;
+
+	    if (blinkTickCounter >= currentDuration) {
+	        blinkTickCounter = 0;
+	        overlayVisible = !overlayVisible;
+	    }
 	}
 
 	@Override
 	public void render(Graphics g) {
-		g.setColor(Color.BLACK);
-	    g.fillRect(0, 0, GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT);
+	    g.drawImage(backgroundImage, 0, 0, GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT, null);
 
-	    g.setFont(new Font("Arial", Font.BOLD, 52));
-	    g.setColor(Color.WHITE);
-	    FontMetrics metrics = g.getFontMetrics(new Font("Arial", Font.BOLD, 52));
-	    int width = metrics.stringWidth("ANOMALIA");
-	    g.drawString("ANOMALIA", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 - 20);
-
-	    g.setColor(Color.LIGHT_GRAY);
-	    g.setFont(new Font("Arial", Font.PLAIN, 18));
-	    metrics = g.getFontMetrics(new Font("Arial", Font.PLAIN, 18));
-	    
-	    width = metrics.stringWidth("A / D / setas: mover     ESPAÇO / W / seta pra cima: pulo / pulo duplo   P: pause");
-	    g.drawString("A / D / setas: mover     ESPAÇO / W / seta pra cima: pulo / pulo duplo   P: pause", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 30);
-	    
-	    width = metrics.stringWidth("Chegue ao núcleo antes que a anomalia consuma o nível");
-	    g.drawString("Chegue ao núcleo antes que a anomalia consuma o nível", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 100);
-	    
-	    g.setColor(Color.getHSBColor(200f / 360f, 0.55f, 0.98f));
-	    g.setFont(new Font("Arial", Font.BOLD, 22));
-	    metrics = g.getFontMetrics(new Font("Arial", Font.BOLD, 22));
-	    width = metrics.stringWidth("Pressione qualquer tecla para começar o jogo");
-	    if (blinkVisible) {
-	    	g.drawString("Pressione qualquer tecla para começar o jogo", (GameConfig.SCREEN_WIDTH - width) / 2, GameConfig.SCREEN_HEIGHT / 2 + 150);
+	    if (overlayVisible) {
+	        g.drawImage(warningOverlay, (GameConfig.SCREEN_WIDTH - warningOverlay.getWidth())/ 2, 100, null);
 	    }
-	}
-	
-	public void updateBlink() {
-	    blinkTimer += GameConfig.FIXED_DELTA;
-	    if (blinkTimer >= 0.95) {
-	        blinkVisible = !blinkVisible;
-	        blinkTimer = 0;
+
+	    g.drawImage(vignetteImage, 0, 0, GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT, null);
+
+	    g.drawImage(controlsImage, GameConfig.SCREEN_WIDTH - controlsImage.getWidth(), 0, null);
+	    
+	    if (overlayVisible) {
+	        g.drawImage(startMsg, GameConfig.SCREEN_WIDTH - startMsg.getWidth() - 40, GameConfig.SCREEN_HEIGHT - 100, null);
 	    }
 	}
 
