@@ -93,7 +93,7 @@ public class PlayingState implements GameState {
 		    player.updateX();
 		    collision.resolveX(player, blocks);
 		    player.updateY();
-		    collision.resolveY(player, blocks);
+		    collision.resolveY(player, blocks, anomaly);
 		}
 		player.updateAnimation();
 	    anomaly.update();

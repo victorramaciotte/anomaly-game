@@ -15,7 +15,7 @@ public class CollisionSystem {
 		return a.getBounds().intersects(b.getBounds());
 	}
 	
-	public void resolveY(Player p, List<Block> blocks) {
+	public void resolveY(Player p, List<Block> blocks, Anomaly anomaly) {
 		boolean landedThisTick = false;
 		boolean wasOnGround = p.isOnGround();
 		
@@ -27,7 +27,7 @@ public class CollisionSystem {
 				p.resetJumps();
 				landedThisTick = true;
 				
-				if (block.getState() == BlockState.CORRUPTED || block.getState() == BlockState.CRACKED) {
+				if (block.getState() == BlockState.CORRUPTED || block.getState() == BlockState.CRACKED && p.getBounds().intersects(anomaly.getAffectedArea())) {
 					if (p.isDying()) return;
 					p.takeDamage(GameConfig.ANOMALY_DAMAGE_PER_SECOND);
 				}
