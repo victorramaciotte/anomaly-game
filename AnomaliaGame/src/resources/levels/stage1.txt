@@ -8,5 +8,4 @@
 #......................................................................................................................#
 #............N..........................M.......NNN.........N......................NnN........................C........#
 #........M..NFn.....NnN..........NnnNNNnnnNnNN............Nn............M......................NN...........NNnNn...M..#
-NnNNFFNnNNnNFFFNNNNNFFFNNnNNnn...FFFFFFFFFFFFF........NNNNFFNNNNNNnnNN.NNnnNNnNNn........NNNNNNFFNnnNNNNnnNNFFFFFNNNNnN#
-FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF...FFFFFFFFFFFFF........FFFFFFFFFFFFFFFF.FFFFFFFFFF........FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+NnNNnNNnNNnNFFFNNNNNFFFNNnNNnn...FFFFFFFFFFFFF........NNNNFFNNNNNNnnNN.NNnnNNnNNn........NNNNNNFFNnnNNNNnnNNFFFFFNNNNnN#

@@ -14,18 +14,18 @@ public final class GameConfig {
     public static final double PLAYER_WIDTH = 51;
     public static final double PLAYER_HEIGHT = 96;
     public static final double MOVE_SPEED = 2.5;
-    public static final double ANOMALY_BASE_SPEED = 0.1;// px por tick
-    public static final double JUMP_FORCE = -6.0;   // px por tick
+    public static final double ANOMALY_BASE_SPEED = 0.4;// px por tick
+    public static final double JUMP_FORCE = -7.0;   // px por tick
     public static final double GRAVITY = 0.15;         // px por tick²
     public static final int MAX_JUMPS = 2;
 
     public static final double MAX_HP = 100;
     public static final int STARTING_LIVES = 5;
-    public static final double ANOMALY_DAMAGE_PER_SECOND = 5.0/UPS;
-    public static final double ANOMALY_LIGHT_DAMAGE = 1.0/UPS;
+    public static final double ANOMALY_DAMAGE_PER_SECOND = 50.0/UPS;
+    public static final double ANOMALY_LIGHT_DAMAGE = 5.0/UPS;
 
     public static final double FALL_DAMAGE_MIN_HEIGHT = 280;
-    public static final double FALL_DAMAGE_AMOUNT = 25;
+    public static final double FALL_DAMAGE_AMOUNT = 15;
 
     public static final double VOID_MARGIN = 100;
 }

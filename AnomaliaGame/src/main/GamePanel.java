@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel {
@@ -61,5 +62,6 @@ public class GamePanel extends JPanel {
 	public void paintComponent(Graphics g) {
 	    super.paintComponent(g);
 	    game.render(g); 
+	    Toolkit.getDefaultToolkit().sync();
 	}
 }
