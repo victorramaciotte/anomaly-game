@@ -304,8 +304,6 @@ public class PlayingState implements GameState {
 	    }
 	    
 	}
-	
-	
 
 	private void checkVoidDeath() {
 		if (player.getY() > levelHeight + GameConfig.VOID_MARGIN) {
@@ -315,7 +313,6 @@ public class PlayingState implements GameState {
 			
 			player.finishDeath();
 		}
-		
 	}
 	
 	private void loadStage(StageConfig config, Player player) {

@@ -16,6 +16,7 @@ public class GameWindow {
 		jframe = new JFrame("SOLUTUS");
 		setWindowIcon(jframe, "images/ui/icon.png");
 		jframe.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		jframe.setResizable(false);
 		jframe.add(gamePanel);
 		jframe.pack();
 		jframe.setLocationRelativeTo(null);
