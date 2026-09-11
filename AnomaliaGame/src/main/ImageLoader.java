@@ -1,6 +1,8 @@
 package main;
 
 import javax.imageio.ImageIO;
+
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +23,21 @@ public class ImageLoader {
             return ImageIO.read(is);
         } catch (IOException e) {
             return null;
+        }
+    }
+    
+    public static Font loadFont(String path, float size) {
+        if (!path.startsWith("/")) path = "/" + path;
+        
+        try (InputStream is = ImageLoader.class.getResourceAsStream(path)) {
+            if (is == null) {
+                System.err.println("Fonte não encontrada: " + path);
+                return new Font("SansSerif", Font.BOLD, (int) size); // Fallback se falhar
+            }
+            return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(size);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Font("SansSerif", Font.BOLD, (int) size);
         }
     }
 }

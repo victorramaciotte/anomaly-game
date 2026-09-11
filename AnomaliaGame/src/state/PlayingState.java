@@ -32,6 +32,7 @@ import main.Background;
 import main.Camera;
 import main.CorruptionOverlay;
 import main.GameConfig;
+import main.HighScore;
 import main.ImageLoader;
 
 public class PlayingState implements GameState {
@@ -58,11 +59,12 @@ public class PlayingState implements GameState {
 	private int stageCompleteTicksRemaining;
 	private static final int STAGE_COMPLETE_DURATION = 350; 
 	private BufferedImage stageCompleteImage;
+	private BufferedImage lastStageCompleteImage;
 	
-	private final Font fontTime = new Font("SansSerif", Font.BOLD, 16);
-	private final Font fontLevelNum = new Font("SansSerif", Font.BOLD, 24);
-	private final Font fontLevelInfo = new Font("SansSerif", Font.PLAIN, 14);
-	private final Font fontLevelTitle = new Font("SansSerif", Font.BOLD, 14);
+	private Font fontTime;
+	private Font fontLevelNum;
+	private Font fontLevelInfo;
+	private Font fontLevelTitle;
 	
 	public PlayingState(Campaign campaign, GameStateManager stateManager) {
 	    this.campaign = campaign;
@@ -149,8 +151,10 @@ public class PlayingState implements GameState {
 		if (showingStageComplete) {
         int x = (GameConfig.SCREEN_WIDTH - stageCompleteImage.getWidth()) / 2;
         int y = (GameConfig.SCREEN_HEIGHT - stageCompleteImage.getHeight()) / 2;
-        g.drawImage(stageCompleteImage, x, y, null);
-    }
+        if(campaign.hasNextStage()) { g.drawImage(stageCompleteImage, x, y, null); } 
+        else { g.drawImage(lastStageCompleteImage, x, y, null); }
+        
+		}
 	}
 	
 	private void advanceOrFinish() {
@@ -158,7 +162,12 @@ public class PlayingState implements GameState {
 	        campaign.advance();
 	        loadStage(campaign.getCurrentStage(), player);
 	    } else {
-	        stateManager.setState(new GameOverState(stateManager, true));
+	        double bestTime = HighScore.load();
+	        boolean isNewRecord = elapsedSeconds < bestTime;
+	        if (isNewRecord) {
+	            HighScore.save(elapsedSeconds);
+	        }
+	        stateManager.setState(new GameOverState(stateManager, true, elapsedSeconds, isNewRecord));
 	    }
 	}
 	
@@ -166,6 +175,10 @@ public class PlayingState implements GameState {
 	    levelBadge = ImageLoader.load("images/ui/level_bg.png");
 	    hpFrame = ImageLoader.load("images/ui/life_frame.png");
 	    lifeIcon = ImageLoader.load("images/ui/life.png");
+	    fontTime = ImageLoader.loadFont("fonts/Oxanium-SemiBold.ttf", 16f);
+		fontLevelNum = ImageLoader.loadFont("fonts/Oxanium-SemiBold.ttf", 24f);
+		fontLevelInfo = ImageLoader.loadFont("fonts/Oxanium-Regular.ttf", 14f);
+		fontLevelTitle = ImageLoader.loadFont("fonts/Oxanium-SemiBold.ttf", 14f);
 	}
 	
 	private void renderHUD(Graphics g) {
@@ -311,6 +324,7 @@ public class PlayingState implements GameState {
 	    levelHeight = levelData.getLevelHeight();
 	    background = new ArrayList<>();
 	    stageCompleteImage = ImageLoader.load("images/ui/stage_complete.png");
+	    lastStageCompleteImage = ImageLoader.load("images/ui/last_stage_complete.png");
 	    
 	    List<String> layerPaths = config.getBackgroundLayers();
 	    List<String> corruptedPaths = config.getCorruptedBackgroundLayers();
